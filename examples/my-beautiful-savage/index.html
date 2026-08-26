@@ -114,13 +114,15 @@
     display:flex;align-items:center;justify-content:space-between;
   }
   .logo{
+    display:flex;align-items:center;gap:9px;
     font-family:'Archivo Black',sans-serif;
     font-size:1.15rem;
     text-transform:uppercase;
     letter-spacing:.02em;
   }
   .logo b{color:var(--clay);}
-  .main-nav > ul{display:flex;align-items:center;gap:6px;}
+  .logo-paw{width:22px;height:22px;flex:0 0 auto;color:var(--clay);}
+  .main-nav > ul{display:flex;align-items:center;gap:10px;}
   .main-nav a{
     display:inline-block;
     font-weight:600;font-size:.9rem;
@@ -134,7 +136,7 @@
     background:var(--sand-2);
     color:var(--clay-dark);
   }
-  .main-nav a:hover{transform:scale(1.08);}
+  .main-nav a:hover{transform:scale(1.06);}
 
   /* Dropdown: Náš chov */
   .has-dropdown{position:relative;}
@@ -150,7 +152,7 @@
   .has-dropdown:focus-within .dropdown-item{
     background:var(--sand-2);
     color:var(--clay-dark);
-    transform:scale(1.08);
+    transform:scale(1.06);
   }
   .dropdown-item a{padding:0;border-radius:0;background:none;transform:none;}
   .dropdown-item a:hover{background:none;color:inherit;transform:none;}
@@ -258,8 +260,8 @@
   }
   .news-head h2{font-size:clamp(1.8rem,3.6vw,2.8rem);}
   .news-head p{margin-top:18px;color:var(--ink-2);}
-  .news-carousel-wrap{display:flex;align-items:stretch;gap:14px;}
-  .news-carousel{
+  .carousel-wrap{display:flex;align-items:stretch;gap:14px;}
+  .news-carousel,.gallery-carousel{
     flex:1 1 auto;min-width:0;
     display:flex;
     overflow-x:auto;
@@ -268,7 +270,7 @@
     -webkit-overflow-scrolling:touch;
     scrollbar-width:none;
   }
-  .news-carousel::-webkit-scrollbar{display:none;}
+  .news-carousel::-webkit-scrollbar,.gallery-carousel::-webkit-scrollbar{display:none;}
   .news-slide{
     flex:0 0 100%;
     scroll-snap-align:start;
@@ -277,6 +279,14 @@
     gap:22px;
     padding:2px;
     text-align:left;
+  }
+  .gallery-slide{
+    flex:0 0 100%;
+    scroll-snap-align:start;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+    padding:2px;
   }
   .news-card{
     background:var(--sand);
@@ -383,11 +393,6 @@
   .gallery-section .eyebrow,.gallery-section h2,.gallery-section .lead{margin-left:auto;margin-right:auto;}
   .gallery-section h2{font-size:clamp(1.8rem,3.6vw,2.8rem);}
   .gallery-section .lead{max-width:56ch;color:var(--ink-2);margin-top:18px;margin-bottom:44px;}
-  .gallery-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:14px;
-  }
   .gallery-item{aspect-ratio:1/1;cursor:zoom-in;}
   .gallery-item .photo-frame{width:100%;height:100%;}
 
@@ -500,7 +505,6 @@
       transition:opacity .18s ease, transform .18s ease, visibility .18s;
       padding:8px;z-index:10;
     }
-    .has-dropdown:hover .dropdown,
     .has-dropdown.open .dropdown,
     .has-dropdown:focus-within .dropdown{
       opacity:1;visibility:visible;transform:translateY(0);
@@ -523,7 +527,6 @@
     .main-nav a:hover{transform:none;}
     .nav-toggle{display:flex;}
     .cta-grid{grid-template-columns:1fr;}
-    .gallery-grid{grid-template-columns:repeat(2,1fr);}
     .dropdown-item{justify-content:space-between;padding:9px 10px 9px 18px;border-radius:12px;}
     .dropdown-item a{flex:1 1 auto;}
     .dropdown{
@@ -537,7 +540,7 @@
     .contacts-grid{grid-template-columns:1.1fr 1fr;align-items:center;}
   }
   @media (max-width:480px){
-    .gallery-grid{grid-template-columns:1fr 1fr;gap:10px;}
+    .gallery-slide{gap:8px;}
     .split,.gallery-section,.cta-dark,.contacts,.news-section,.kennel-section{padding:76px 0;}
   }
 </style>
@@ -546,7 +549,13 @@
 
 <header class="site-header">
   <div class="container">
-    <a href="#domu" class="logo">My Beautiful <b>Savage</b></a>
+    <a href="#domu" class="logo">
+      <svg class="logo-paw" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <circle cx="5.2" cy="10.6" r="2.1"/><circle cx="9.6" cy="6.4" r="2.3"/><circle cx="14.4" cy="6.4" r="2.3"/><circle cx="18.8" cy="10.6" r="2.1"/>
+        <path d="M12 13.4c-2.7 0-5 2.2-5 4.6 0 1.4 1.1 2.4 2.4 2.4.9 0 1.7-.5 2.6-.5s1.7.5 2.6.5c1.3 0 2.4-1 2.4-2.4 0-2.4-2.3-4.6-5-4.6z"/>
+      </svg>
+      My Beautiful <b>Savage</b>
+    </a>
     <button class="nav-toggle" id="navToggle" aria-label="Otevřít menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -621,7 +630,7 @@
         <h2>Novinky</h2>
         <p>Aktuality z naší chovatelské stanice — nová štěňata, výstavní úspěchy i důležitá oznámení.</p>
       </div>
-      <div class="news-carousel-wrap">
+      <div class="carousel-wrap">
         <button type="button" class="carousel-arrow prev" id="newsBack" aria-label="Novější novinky">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>
         </button>
@@ -762,18 +771,32 @@
       <span class="eyebrow">Náš chov v obrazech</span>
       <h2>Fotogalerie</h2>
       <p class="lead">Štěňata, dospělí psi i chvíle ze života naší smečky — nahlédněte, jak to u nás v My Beautiful Savage vypadá.</p>
-      <div class="gallery-grid" id="galleryGrid">
-        <!-- 9 gallery items generated below -->
-        <div class="gallery-item"><div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z chovatelské stanice My Beautiful Savage"></div></div>
-        <div class="gallery-item"><div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z chovatelské stanice My Beautiful Savage"></div></div>
-        <div class="gallery-item"><div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z chovatelské stanice My Beautiful Savage"></div></div>
-        <div class="gallery-item"><div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z chovatelské stanice My Beautiful Savage"></div></div>
-        <div class="gallery-item"><div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z chovatelské stanice My Beautiful Savage"></div></div>
-        <div class="gallery-item"><div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z chovatelské stanice My Beautiful Savage"></div></div>
-        <div class="gallery-item"><div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z chovatelské stanice My Beautiful Savage"></div></div>
-        <div class="gallery-item"><div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z chovatelské stanice My Beautiful Savage"></div></div>
-        <div class="gallery-item"><div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z chovatelské stanice My Beautiful Savage"></div></div>
+      <div class="carousel-wrap">
+        <button type="button" class="carousel-arrow prev" id="galleryBack" aria-label="Předchozí fotografie">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>
+        </button>
+        <div class="gallery-carousel" id="galleryCarousel">
+          <div class="gallery-slide">
+            <div class="gallery-item"><div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z chovatelské stanice My Beautiful Savage"></div></div>
+            <div class="gallery-item"><div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z chovatelské stanice My Beautiful Savage"></div></div>
+            <div class="gallery-item"><div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z chovatelské stanice My Beautiful Savage"></div></div>
+          </div>
+          <div class="gallery-slide">
+            <div class="gallery-item"><div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z chovatelské stanice My Beautiful Savage"></div></div>
+            <div class="gallery-item"><div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z chovatelské stanice My Beautiful Savage"></div></div>
+            <div class="gallery-item"><div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z chovatelské stanice My Beautiful Savage"></div></div>
+          </div>
+          <div class="gallery-slide">
+            <div class="gallery-item"><div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z chovatelské stanice My Beautiful Savage"></div></div>
+            <div class="gallery-item"><div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z chovatelské stanice My Beautiful Savage"></div></div>
+            <div class="gallery-item"><div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z chovatelské stanice My Beautiful Savage"></div></div>
+          </div>
+        </div>
+        <button type="button" class="carousel-arrow next" id="galleryForward" aria-label="Další fotografie">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
       </div>
+      <div class="carousel-dots" id="galleryDots"></div>
     </div>
   </section>
 
@@ -964,43 +987,55 @@
       .catch(function(){ /* keep the terracotta placeholder pattern */ });
   }
 
-  /* News carousel — swipeable, 3 cards per slide, newest first */
-  var newsCarousel = document.getElementById('newsCarousel');
-  if (newsCarousel){
-    var newsSlides = Array.prototype.slice.call(newsCarousel.children);
-    var newsBack = document.getElementById('newsBack');
-    var newsForward = document.getElementById('newsForward');
-    var newsDotsWrap = document.getElementById('newsDots');
+  /* Generic swipeable carousel — used by both Novinky and Fotogalerie */
+  function initCarousel(carousel, prevBtn, nextBtn, dotsWrap, dotLabel){
+    if (!carousel || !dotsWrap) return;
+    var slides = Array.prototype.slice.call(carousel.children);
 
-    newsSlides.forEach(function(_, i){
+    slides.forEach(function(_, i){
       var dot = document.createElement('button');
       dot.type = 'button';
       dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-      dot.setAttribute('aria-label', 'Zobrazit novinky, strana ' + (i + 1));
-      dot.addEventListener('click', function(){ goToNewsSlide(i); });
-      newsDotsWrap.appendChild(dot);
+      dot.setAttribute('aria-label', dotLabel + ' ' + (i + 1));
+      dot.addEventListener('click', function(){ goTo(i); });
+      dotsWrap.appendChild(dot);
     });
-    var newsDots = Array.prototype.slice.call(newsDotsWrap.children);
+    var dots = Array.prototype.slice.call(dotsWrap.children);
 
-    function currentNewsIndex(){
-      return Math.round(newsCarousel.scrollLeft / newsCarousel.clientWidth) || 0;
+    function current(){
+      return Math.round(carousel.scrollLeft / carousel.clientWidth) || 0;
     }
-    function updateNewsUI(){
-      var idx = currentNewsIndex();
-      newsDots.forEach(function(d, i){ d.classList.toggle('active', i === idx); });
-      if (newsBack) newsBack.disabled = idx <= 0;
-      if (newsForward) newsForward.disabled = idx >= newsSlides.length - 1;
+    function update(){
+      var idx = current();
+      dots.forEach(function(d, i){ d.classList.toggle('active', i === idx); });
+      if (prevBtn) prevBtn.disabled = idx <= 0;
+      if (nextBtn) nextBtn.disabled = idx >= slides.length - 1;
     }
-    function goToNewsSlide(i){
-      i = Math.max(0, Math.min(newsSlides.length - 1, i));
-      newsCarousel.scrollTo({ left: i * newsCarousel.clientWidth, behavior: 'smooth' });
+    function goTo(i){
+      i = Math.max(0, Math.min(slides.length - 1, i));
+      carousel.scrollTo({ left: i * carousel.clientWidth, behavior: 'smooth' });
     }
-    if (newsBack) newsBack.addEventListener('click', function(){ goToNewsSlide(currentNewsIndex() - 1); });
-    if (newsForward) newsForward.addEventListener('click', function(){ goToNewsSlide(currentNewsIndex() + 1); });
-    newsCarousel.addEventListener('scroll', function(){ window.requestAnimationFrame(updateNewsUI); });
-    window.addEventListener('resize', function(){ goToNewsSlide(currentNewsIndex()); });
-    updateNewsUI();
+    if (prevBtn) prevBtn.addEventListener('click', function(){ goTo(current() - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', function(){ goTo(current() + 1); });
+    carousel.addEventListener('scroll', function(){ window.requestAnimationFrame(update); });
+    window.addEventListener('resize', function(){ goTo(current()); });
+    update();
   }
+
+  initCarousel(
+    document.getElementById('newsCarousel'),
+    document.getElementById('newsBack'),
+    document.getElementById('newsForward'),
+    document.getElementById('newsDots'),
+    'Zobrazit novinky, strana'
+  );
+  initCarousel(
+    document.getElementById('galleryCarousel'),
+    document.getElementById('galleryBack'),
+    document.getElementById('galleryForward'),
+    document.getElementById('galleryDots'),
+    'Zobrazit fotografie, strana'
+  );
 
   /* Litter detail modal — puppy counts, sexes, and color-collar identification */
   var litters = {
@@ -1168,6 +1203,55 @@
   lightboxClose.addEventListener('click', closeLightbox);
   lightbox.addEventListener('click', function(e){ if (e.target === lightbox) closeLightbox(); });
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeLightbox(); });
+
+  /* Up/Down (and Page Up/Down) move exactly one chapter at a time, matching the
+     section snap-scroll — browsers vary in how they combine native arrow-key
+     scrolling with scroll-snap, so this replaces that with one deterministic jump. */
+  var pageSections = Array.prototype.slice.call(document.querySelectorAll('main > section'));
+  var headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h'), 10) || 84;
+  function currentPageIndex(){
+    /* scroll-margin-top (= header height) means a snapped section's top edge sits
+       header-height below the true scrollY, so that offset has to be added back in
+       to compare against each section's raw offsetTop. */
+    var probe = window.scrollY + headerH + 4;
+    var idx = 0;
+    pageSections.forEach(function(s, i){ if (s.offsetTop <= probe) idx = i; });
+    return idx;
+  }
+  var jumpRestoreTimer = null;
+  function jumpToSection(i){
+    i = Math.max(0, Math.min(pageSections.length - 1, i));
+    /* scroll-snap-type:mandatory fights a scrollIntoView() call that starts from an
+       already-snapped position — it re-asserts itself mid-animation and snaps straight
+       back before the scroll can travel to the target, so it's switched off for the
+       duration of this one jump and restored once the scroll actually finishes
+       (via 'scrollend' where supported; a generous timeout covers browsers that lack it,
+       since restoring too early reproduces the exact bug this works around). */
+    document.documentElement.style.scrollSnapType = 'none';
+    var restored = false;
+    function restoreSnap(){
+      if (restored) return;
+      restored = true;
+      document.documentElement.style.scrollSnapType = '';
+    }
+    window.addEventListener('scrollend', restoreSnap, { once: true });
+    clearTimeout(jumpRestoreTimer);
+    jumpRestoreTimer = setTimeout(restoreSnap, 2500);
+    pageSections[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  document.addEventListener('keydown', function(e){
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'PageDown' && e.key !== 'PageUp') return;
+    var active = document.activeElement;
+    var tag = active && active.tagName;
+    var isFormField = tag && /^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test(tag);
+    if (isFormField || (active && active.isContentEditable)) return;
+    if (mainNav.classList.contains('open')) return;
+    if (litterModal && litterModal.classList.contains('open')) return;
+    if (lightbox && lightbox.classList.contains('open')) return;
+    e.preventDefault();
+    if (e.key === 'ArrowDown' || e.key === 'PageDown') jumpToSection(currentPageIndex() + 1);
+    else jumpToSection(currentPageIndex() - 1);
+  });
 
 })();
 </script>
