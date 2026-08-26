@@ -227,7 +227,26 @@
   .news-head{max-width:640px;margin:0 auto 56px;text-align:center;}
   .news-head h2{font-size:clamp(1.8rem,3.6vw,2.8rem);}
   .news-head p{margin-top:18px;color:var(--ink-2);}
-  .news-grid{display:grid;grid-template-columns:1fr;gap:22px;}
+  .news-carousel-wrap{display:flex;align-items:stretch;gap:14px;}
+  .news-carousel{
+    flex:1 1 auto;min-width:0;
+    display:flex;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    scroll-behavior:smooth;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .news-carousel::-webkit-scrollbar{display:none;}
+  .news-slide{
+    flex:0 0 100%;
+    scroll-snap-align:start;
+    display:grid;
+    grid-template-columns:1fr;
+    gap:22px;
+    padding:2px;
+    text-align:left;
+  }
   .news-card{
     background:var(--sand);
     border:1px solid rgba(32,26,21,.08);
@@ -238,6 +257,22 @@
   .news-date{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--clay);font-weight:700;}
   .news-card h3{font-size:1.05rem;text-transform:none;letter-spacing:0;}
   .news-card p{margin:0;color:var(--ink-2);font-size:.95rem;}
+  .carousel-arrow{
+    flex:0 0 auto;align-self:center;
+    width:44px;height:44px;border-radius:50%;
+    border:1px solid rgba(32,26,21,.15);
+    background:var(--sand);color:var(--ink);
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .2s ease, color .2s ease, border-color .2s ease, opacity .2s ease;
+  }
+  .carousel-arrow svg{width:18px;height:18px;}
+  .carousel-arrow:hover:not(:disabled){background:var(--clay);color:#fff;border-color:var(--clay);}
+  .carousel-arrow:disabled{opacity:.35;cursor:default;}
+  .carousel-dots{display:flex;justify-content:center;gap:8px;margin-top:30px;}
+  .carousel-dot{width:8px;height:8px;border-radius:5px;background:rgba(32,26,21,.2);border:none;padding:0;cursor:pointer;transition:width .2s ease, background .2s ease;}
+  .carousel-dot.active{background:var(--clay);width:22px;}
+  @media (max-width:639px){.carousel-arrow{display:none;}}
 
   /* ---------- Náš chov / litters ---------- */
   .kennel-section{padding:110px 0;background:var(--sand);}
@@ -250,7 +285,11 @@
     border-radius:var(--radius);
     overflow:hidden;
     scroll-margin-top:var(--header-h);
+    cursor:pointer;
+    transition:transform .2s ease, box-shadow .2s ease;
   }
+  .litter-card:hover{transform:translateY(-4px);box-shadow:0 16px 30px rgba(32,26,21,.14);}
+  .litter-card:focus-visible{outline:2px solid var(--clay);outline-offset:2px;}
   .litter-card .photo-frame{aspect-ratio:16/10;border-radius:0;}
   .litter-card-body{padding:22px 22px 26px;}
   .litter-card h3{font-size:1.15rem;margin-bottom:10px;}
@@ -260,7 +299,49 @@
   }
   .litter-status.available{background:rgba(181,80,44,.14);color:var(--clay);}
   .litter-status.reserved{background:rgba(107,95,82,.16);color:var(--muted);}
+  .litter-status.new{background:rgba(215,154,59,.24);color:var(--clay-dark);}
   .litter-card p{margin:0;color:var(--ink-2);font-size:.92rem;}
+  .litter-link{
+    display:inline-block;margin-top:14px;
+    font-size:.8rem;font-weight:700;letter-spacing:.03em;color:var(--clay);
+  }
+
+  /* ---------- Litter detail modal ---------- */
+  .litter-modal{
+    position:fixed;inset:0;z-index:300;
+    background:rgba(15,11,8,.88);
+    display:none;align-items:flex-start;justify-content:center;
+    padding:48px 20px;overflow-y:auto;
+  }
+  .litter-modal.open{display:flex;}
+  .litter-modal-inner{
+    position:relative;
+    background:var(--sand);
+    border-radius:var(--radius);
+    max-width:860px;width:100%;
+    padding:44px 30px 40px;
+    margin:auto;
+  }
+  .litter-modal-inner .lightbox-close{
+    position:absolute;top:14px;right:14px;
+    background:rgba(32,26,21,.08);color:var(--ink);
+  }
+  .litter-modal-head h3{font-size:clamp(1.6rem,3.4vw,2.3rem);margin:6px 0 14px;}
+  #litterModalMeta{margin:0 0 10px;font-weight:700;color:var(--clay);}
+  #litterModalNote{margin:0;color:var(--ink-2);}
+  .litter-modal-hint{margin:28px 0 18px;font-size:.85rem;color:var(--muted);font-style:italic;}
+  .puppy-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .puppy-card{background:var(--sand-2);border-radius:var(--radius);overflow:hidden;}
+  .puppy-card .photo-frame{aspect-ratio:1/1;border-radius:0;}
+  .puppy-card-body{padding:12px 14px 14px;}
+  .puppy-collar{display:flex;align-items:center;gap:8px;font-weight:700;font-size:.85rem;}
+  .collar-dot{
+    width:14px;height:14px;border-radius:50%;flex:0 0 auto;
+    border:2px solid rgba(255,255,255,.7);box-shadow:0 0 0 1px rgba(32,26,21,.18);
+  }
+  .puppy-sex{font-size:.78rem;color:var(--muted);margin-top:3px;}
+  .puppy-reserved{font-size:.68rem;color:var(--clay);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:5px;}
+  @media (min-width:560px){.puppy-grid{grid-template-columns:repeat(3,1fr);}}
 
   /* ---------- Gallery ---------- */
   .gallery-section{
@@ -359,7 +440,7 @@
   @media (min-width:760px){
     .split .container{grid-template-columns:1fr 1fr;gap:64px;}
     .breed-cards{grid-template-columns:repeat(4,1fr);}
-    .news-grid{grid-template-columns:repeat(3,1fr);}
+    .news-slide{grid-template-columns:repeat(3,1fr);}
   }
   @media (min-width:640px){
     .litter-grid{grid-template-columns:repeat(2,1fr);}
@@ -497,23 +578,68 @@
         <h2>Novinky</h2>
         <p>Aktuality z naší chovatelské stanice — nová štěňata, výstavní úspěchy i důležitá oznámení.</p>
       </div>
-      <div class="news-grid">
-        <article class="news-card">
-          <span class="news-date">12. srpna 2026</span>
-          <h3>Narodil se Vrh D</h3>
-          <p>S radostí oznamujeme, že se nám narodilo pět zdravých štěňátek. Podrobnosti a fotografie postupně přidáváme v sekci Náš chov.</p>
-        </article>
-        <article class="news-card">
-          <span class="news-date">3. června 2026</span>
-          <h3>Úspěch na mezinárodní výstavě</h3>
-          <p>Náš chovný pes získal titul CAC a posunul se o krok blíž k šampionátu. Děkujeme rozhodčím i všem, kdo nám drželi palce.</p>
-        </article>
-        <article class="news-card">
-          <span class="news-date">20. dubna 2026</span>
-          <h3>Poslední štěňata z Vrhu C</h3>
-          <p>Ve Vrhu C zbývají poslední dvě volná štěňata — fenka a pejsek. Ozvěte se nám přes kontaktní formulář níže.</p>
-        </article>
+      <div class="news-carousel-wrap">
+        <button type="button" class="carousel-arrow prev" id="newsBack" aria-label="Novější novinky">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>
+        </button>
+        <div class="news-carousel" id="newsCarousel">
+          <div class="news-slide">
+            <article class="news-card">
+              <span class="news-date">12. srpna 2026</span>
+              <h3>Narodil se Vrh D</h3>
+              <p>S radostí oznamujeme, že se nám narodilo pět zdravých štěňátek — tři fenky a dva pejsci. Najdete je i s fotkami v sekci Náš chov.</p>
+            </article>
+            <article class="news-card">
+              <span class="news-date">3. června 2026</span>
+              <h3>Úspěch na mezinárodní výstavě</h3>
+              <p>Náš chovný pes získal titul CAC a posunul se o krok blíž k šampionátu. Děkujeme rozhodčím i všem, kdo nám drželi palce.</p>
+            </article>
+            <article class="news-card">
+              <span class="news-date">20. dubna 2026</span>
+              <h3>Poslední štěňata z Vrhu C</h3>
+              <p>Ve Vrhu C zbývají poslední dvě volná štěňata — fenka a pejsek. Ozvěte se nám přes kontaktní formulář níže.</p>
+            </article>
+          </div>
+          <div class="news-slide">
+            <article class="news-card">
+              <span class="news-date">15. ledna 2026</span>
+              <h3>Narodil se Vrh C</h3>
+              <p>Vítejte, Vrhu C! Na svět přišlo pět zdravých štěňátek — dvě fenky a tři pejsci.</p>
+            </article>
+            <article class="news-card">
+              <span class="news-date">2. listopadu 2025</span>
+              <h3>Nová spolupráce s veterinární klinikou</h3>
+              <p>Od listopadu spolupracujeme s veterinární klinikou VetCare na pravidelných zdravotních prohlídkách všech našich chovných psů i štěňat.</p>
+            </article>
+            <article class="news-card">
+              <span class="news-date">8. září 2025</span>
+              <h3>Klub basenji: podzimní bonitace</h3>
+              <p>Zúčastnili jsme se podzimní bonitace Klubu chovatelů basenji, kde naši chovní jedinci úspěšně splnili všechny podmínky pro další chov.</p>
+            </article>
+          </div>
+          <div class="news-slide">
+            <article class="news-card">
+              <span class="news-date">30. listopadu 2024</span>
+              <h3>Narodil se Vrh B</h3>
+              <p>Na svět přišlo šest zdravých štěňátek — tři fenky a tři pejsci. Dnes už úspěšně reprezentují náš chov na výstavách.</p>
+            </article>
+            <article class="news-card">
+              <span class="news-date">14. července 2024</span>
+              <h3>Ocenění „Nejlepší mladý pes“</h3>
+              <p>Na klubové výstavě jsme získali ocenění Nejlepší mladý pes. Děkujeme za podporu všem příznivcům našeho chovu.</p>
+            </article>
+            <article class="news-card">
+              <span class="news-date">5. března 2024</span>
+              <h3>Narodil se Vrh A, náš úplně první vrh</h3>
+              <p>Se vzrušením i respektem jsme přivítali náš úplně první vrh — čtyři štěňátka, dvě fenky a dva pejsky, kterými vše u My Beautiful Savage začalo.</p>
+            </article>
+          </div>
+        </div>
+        <button type="button" class="carousel-arrow next" id="newsForward" aria-label="Starší novinky">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
       </div>
+      <div class="carousel-dots" id="newsDots"></div>
     </div>
   </section>
 
@@ -524,6 +650,7 @@
         <span class="eyebrow">Naši chovní jedinci a vrhy</span>
         <h2>Náš chov</h2>
         <p>Chovné výsledky vedeme podle jednotlivých vrhů, které postupně značíme písmeny A, B, C a D. U každého najdete základní informace i aktuální dostupnost štěňat.</p>
+        <p>Nejmladší štěňata ještě nemají jméno — rozlišujeme je podle barevných obojků. Klikněte na vrh a podívejte se na jednotlivá štěňátka.</p>
       </div>
       <div class="litter-grid">
         <article class="litter-card" id="vrh-a">
@@ -532,6 +659,7 @@
             <h3>Vrh A</h3>
             <span class="litter-status reserved">Odchováno</span>
             <p>Datum narození: březen 2024. Rodiče pocházejí z evropských chovných linií. Všechna štěňata už odešla do nových rodin po celé Evropě.</p>
+            <span class="litter-link">Zobrazit vrh →</span>
           </div>
         </article>
         <article class="litter-card" id="vrh-b">
@@ -540,6 +668,7 @@
             <h3>Vrh B</h3>
             <span class="litter-status reserved">Odchováno</span>
             <p>Datum narození: listopad 2024. Šest štěňat s výbornou povahou, dnes úspěšně reprezentují náš chov na výstavách.</p>
+            <span class="litter-link">Zobrazit vrh →</span>
           </div>
         </article>
         <article class="litter-card" id="vrh-c">
@@ -548,14 +677,16 @@
             <h3>Vrh C</h3>
             <span class="litter-status available">K rezervaci</span>
             <p>Datum narození: leden 2026. Zbývají poslední dvě štěňátka — fenka a pejsek. Rádi s vámi domluvíme osobní návštěvu.</p>
+            <span class="litter-link">Zobrazit vrh →</span>
           </div>
         </article>
         <article class="litter-card" id="vrh-d">
           <div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z Vrhu D chovatelské stanice My Beautiful Savage"></div>
           <div class="litter-card-body">
             <h3>Vrh D</h3>
-            <span class="litter-status available">Plánovaný vrh</span>
-            <p>Očekávané narození: podzim 2026. Zájemce o rezervaci předem rádi zapíšeme do pořadníku.</p>
+            <span class="litter-status new">Nově narozeno</span>
+            <p>Datum narození: 12. srpna 2026. Pět čerstvých štěňátek — zatím je rozlišujeme jen podle barevných obojků, než dostanou jména.</p>
+            <span class="litter-link">Zobrazit vrh →</span>
           </div>
         </article>
       </div>
@@ -678,6 +809,20 @@
   <img id="lightboxImg" src="" alt="Zvětšená fotografie basenji">
 </div>
 
+<div class="litter-modal" id="litterModal">
+  <div class="litter-modal-inner">
+    <button class="lightbox-close" id="litterModalClose" aria-label="Zavřít">&times;</button>
+    <div class="litter-modal-head">
+      <span class="eyebrow" id="litterModalStatus"></span>
+      <h3 id="litterModalTitle"></h3>
+      <p id="litterModalMeta"></p>
+      <p id="litterModalNote"></p>
+    </div>
+    <p class="litter-modal-hint">Nejmladší štěňata ještě nemají jméno — rozlišujeme je podle barevných obojků:</p>
+    <div class="puppy-grid" id="puppyGrid"></div>
+  </div>
+</div>
+
 <script>
 (function(){
   "use strict";
@@ -772,6 +917,195 @@
         }
       })
       .catch(function(){ /* keep the terracotta placeholder pattern */ });
+  }
+
+  /* News carousel — swipeable, 3 cards per slide, newest first */
+  var newsCarousel = document.getElementById('newsCarousel');
+  if (newsCarousel){
+    var newsSlides = Array.prototype.slice.call(newsCarousel.children);
+    var newsBack = document.getElementById('newsBack');
+    var newsForward = document.getElementById('newsForward');
+    var newsDotsWrap = document.getElementById('newsDots');
+
+    newsSlides.forEach(function(_, i){
+      var dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Zobrazit novinky, strana ' + (i + 1));
+      dot.addEventListener('click', function(){ goToNewsSlide(i); });
+      newsDotsWrap.appendChild(dot);
+    });
+    var newsDots = Array.prototype.slice.call(newsDotsWrap.children);
+
+    function currentNewsIndex(){
+      return Math.round(newsCarousel.scrollLeft / newsCarousel.clientWidth) || 0;
+    }
+    function updateNewsUI(){
+      var idx = currentNewsIndex();
+      newsDots.forEach(function(d, i){ d.classList.toggle('active', i === idx); });
+      if (newsBack) newsBack.disabled = idx <= 0;
+      if (newsForward) newsForward.disabled = idx >= newsSlides.length - 1;
+    }
+    function goToNewsSlide(i){
+      i = Math.max(0, Math.min(newsSlides.length - 1, i));
+      newsCarousel.scrollTo({ left: i * newsCarousel.clientWidth, behavior: 'smooth' });
+    }
+    if (newsBack) newsBack.addEventListener('click', function(){ goToNewsSlide(currentNewsIndex() - 1); });
+    if (newsForward) newsForward.addEventListener('click', function(){ goToNewsSlide(currentNewsIndex() + 1); });
+    newsCarousel.addEventListener('scroll', function(){ window.requestAnimationFrame(updateNewsUI); });
+    window.addEventListener('resize', function(){ goToNewsSlide(currentNewsIndex()); });
+    updateNewsUI();
+  }
+
+  /* Litter detail modal — puppy counts, sexes, and color-collar identification */
+  var litters = {
+    'vrh-a': {
+      title: 'Vrh A', born: '5. března 2024', status: 'Odchováno',
+      females: 2, males: 2,
+      note: 'Všechna štěňata už odešla do nových rodin po celé Evropě.',
+      puppies: [
+        { collar: 'Žlutý obojek', color: '#e3b23c', sex: 'fenka' },
+        { collar: 'Červený obojek', color: '#b23a2e', sex: 'pejsek' },
+        { collar: 'Modrý obojek', color: '#3d6ea5', sex: 'pejsek' },
+        { collar: 'Zelený obojek', color: '#4f8f5b', sex: 'fenka' }
+      ]
+    },
+    'vrh-b': {
+      title: 'Vrh B', born: '30. listopadu 2024', status: 'Odchováno',
+      females: 3, males: 3,
+      note: 'Šest štěňat s výbornou povahou dnes úspěšně reprezentuje náš chov na výstavách.',
+      puppies: [
+        { collar: 'Žlutý obojek', color: '#e3b23c', sex: 'fenka' },
+        { collar: 'Červený obojek', color: '#b23a2e', sex: 'pejsek' },
+        { collar: 'Modrý obojek', color: '#3d6ea5', sex: 'pejsek' },
+        { collar: 'Zelený obojek', color: '#4f8f5b', sex: 'fenka' },
+        { collar: 'Oranžový obojek', color: '#d97a34', sex: 'pejsek' },
+        { collar: 'Růžový obojek', color: '#c97a94', sex: 'fenka' }
+      ]
+    },
+    'vrh-c': {
+      title: 'Vrh C', born: '15. ledna 2026', status: 'K rezervaci',
+      females: 2, males: 3,
+      note: 'Zbývají poslední dvě volná štěňátka — rádi s vámi domluvíme osobní návštěvu.',
+      puppies: [
+        { collar: 'Žlutý obojek', color: '#e3b23c', sex: 'pejsek', reserved: true },
+        { collar: 'Červený obojek', color: '#b23a2e', sex: 'pejsek', reserved: true },
+        { collar: 'Modrý obojek', color: '#3d6ea5', sex: 'pejsek', reserved: true },
+        { collar: 'Zelený obojek', color: '#4f8f5b', sex: 'fenka' },
+        { collar: 'Oranžový obojek', color: '#d97a34', sex: 'fenka' }
+      ]
+    },
+    'vrh-d': {
+      title: 'Vrh D', born: '12. srpna 2026', status: 'Nově narozeno',
+      females: 3, males: 2,
+      note: 'Štěňátka jsou zatím úplně čerstvá — než dostanou jména, rozlišujeme je podle barevných obojků.',
+      puppies: [
+        { collar: 'Žlutý obojek', color: '#e3b23c', sex: 'fenka' },
+        { collar: 'Červený obojek', color: '#b23a2e', sex: 'pejsek' },
+        { collar: 'Modrý obojek', color: '#3d6ea5', sex: 'fenka' },
+        { collar: 'Zelený obojek', color: '#4f8f5b', sex: 'pejsek' },
+        { collar: 'Oranžový obojek', color: '#d97a34', sex: 'fenka' }
+      ]
+    }
+  };
+
+  var litterModal = document.getElementById('litterModal');
+  var litterModalClose = document.getElementById('litterModalClose');
+  var litterModalStatus = document.getElementById('litterModalStatus');
+  var litterModalTitle = document.getElementById('litterModalTitle');
+  var litterModalMeta = document.getElementById('litterModalMeta');
+  var litterModalNote = document.getElementById('litterModalNote');
+  var puppyGrid = document.getElementById('puppyGrid');
+
+  function buildPuppyCard(p){
+    var card = document.createElement('div');
+    card.className = 'puppy-card';
+
+    var frame = document.createElement('div');
+    frame.className = 'photo-frame';
+    var img = document.createElement('img');
+    img.alt = 'Štěně basenji — ' + p.collar;
+    if (p.photo){
+      img.src = p.photo;
+      img.classList.add('loaded');
+      frame.classList.add('loaded');
+    }
+    frame.appendChild(img);
+
+    var body = document.createElement('div');
+    body.className = 'puppy-card-body';
+
+    var collarRow = document.createElement('div');
+    collarRow.className = 'puppy-collar';
+    var dot = document.createElement('span');
+    dot.className = 'collar-dot';
+    dot.style.background = p.color;
+    collarRow.appendChild(dot);
+    collarRow.appendChild(document.createTextNode(p.collar));
+
+    var sexRow = document.createElement('div');
+    sexRow.className = 'puppy-sex';
+    sexRow.textContent = p.sex === 'fenka' ? 'Fenka' : 'Pejsek';
+
+    body.appendChild(collarRow);
+    body.appendChild(sexRow);
+    if (p.reserved){
+      var res = document.createElement('div');
+      res.className = 'puppy-reserved';
+      res.textContent = 'Rezervováno';
+      body.appendChild(res);
+    }
+
+    card.appendChild(frame);
+    card.appendChild(body);
+    return card;
+  }
+
+  function openLitterModal(key){
+    var data = litters[key];
+    if (!data || !litterModal) return;
+    litterModalStatus.textContent = data.status;
+    litterModalTitle.textContent = data.title;
+    litterModalMeta.textContent = 'Datum narození: ' + data.born + ' • ' + (data.females + data.males) + ' štěňat • ' + data.females + ' fenek • ' + data.males + ' pejsků';
+    litterModalNote.textContent = data.note;
+    puppyGrid.innerHTML = '';
+    data.puppies.forEach(function(p){ puppyGrid.appendChild(buildPuppyCard(p)); });
+    litterModal.classList.add('open');
+  }
+  function closeLitterModal(){ if (litterModal) litterModal.classList.remove('open'); }
+
+  if (litterModal){
+    document.querySelectorAll('.litter-card').forEach(function(card){
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('role', 'button');
+      card.addEventListener('click', function(){ openLitterModal(card.id); });
+      card.addEventListener('keydown', function(e){
+        if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openLitterModal(card.id); }
+      });
+    });
+    litterModalClose.addEventListener('click', closeLitterModal);
+    litterModal.addEventListener('click', function(e){ if (e.target === litterModal) closeLitterModal(); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeLitterModal(); });
+  }
+
+  /* Puppy photos load the same free, breed-filtered API as the rest of the site */
+  var puppyOrder = [];
+  Object.keys(litters).forEach(function(k){
+    litters[k].puppies.forEach(function(p, i){ puppyOrder.push([k, i]); });
+  });
+  if (puppyOrder.length){
+    fetch('https://dog.ceo/api/breed/basenji/images/random/' + puppyOrder.length)
+      .then(function(r){ if(!r.ok) throw new Error('network'); return r.json(); })
+      .then(function(data){
+        if (data && data.status === 'success' && Array.isArray(data.message)){
+          data.message.forEach(function(url, i){
+            if (!puppyOrder[i]) return;
+            var k = puppyOrder[i][0], idx = puppyOrder[i][1];
+            litters[k].puppies[idx].photo = url;
+          });
+        }
+      })
+      .catch(function(){ /* puppies fall back to the collar-color swatch only */ });
   }
 
   /* Lightbox */
