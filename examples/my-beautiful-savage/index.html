@@ -125,6 +125,19 @@
     transition:border-color .2s ease, color .2s ease;
   }
   .main-nav a:hover,.main-nav a.active{border-color:var(--clay);color:var(--clay);}
+
+  /* Dropdown: Náš chov */
+  .has-dropdown{position:relative;}
+  .dropdown-item{display:flex;align-items:center;gap:2px;}
+  .dropdown-toggle{
+    background:none;border:none;cursor:pointer;color:inherit;
+    padding:6px;display:inline-flex;align-items:center;flex:0 0 auto;
+  }
+  .dropdown-toggle svg{width:13px;height:13px;transition:transform .2s ease;}
+  .has-dropdown.open .dropdown-toggle svg{transform:rotate(180deg);}
+  .dropdown{list-style:none;margin:0;padding:0;}
+  .dropdown a:hover,.dropdown a.active{border-color:var(--clay);color:var(--clay);}
+
   .nav-toggle{
     display:none;
     width:42px;height:42px;border:none;background:none;cursor:pointer;
@@ -187,6 +200,7 @@
   .split-text p{max-width:56ch;color:var(--ink-2);font-size:1.02rem;}
   .split.reverse .container{direction:rtl;}
   .split.reverse .container > *{direction:ltr;}
+  .split.alt{background:var(--sand-2);}
 
   /* ---------- Breed section cards ---------- */
   .breed-cards{
@@ -208,10 +222,50 @@
     font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
   }
 
+  /* ---------- News ---------- */
+  .news-section{padding:110px 0;background:var(--sand-2);}
+  .news-head{max-width:640px;margin:0 auto 56px;text-align:center;}
+  .news-head h2{font-size:clamp(1.8rem,3.6vw,2.8rem);}
+  .news-head p{margin-top:18px;color:var(--ink-2);}
+  .news-grid{display:grid;grid-template-columns:1fr;gap:22px;}
+  .news-card{
+    background:var(--sand);
+    border:1px solid rgba(32,26,21,.08);
+    border-radius:var(--radius);
+    padding:28px 26px;
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .news-date{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--clay);font-weight:700;}
+  .news-card h3{font-size:1.05rem;text-transform:none;letter-spacing:0;}
+  .news-card p{margin:0;color:var(--ink-2);font-size:.95rem;}
+
+  /* ---------- Náš chov / litters ---------- */
+  .kennel-section{padding:110px 0;background:var(--sand);}
+  .kennel-head{max-width:680px;margin:0 auto 56px;text-align:center;}
+  .kennel-head h2{font-size:clamp(1.8rem,3.6vw,2.8rem);}
+  .kennel-head p{margin-top:18px;color:var(--ink-2);}
+  .litter-grid{display:grid;grid-template-columns:1fr;gap:24px;}
+  .litter-card{
+    background:var(--sand-2);
+    border-radius:var(--radius);
+    overflow:hidden;
+    scroll-margin-top:var(--header-h);
+  }
+  .litter-card .photo-frame{aspect-ratio:16/10;border-radius:0;}
+  .litter-card-body{padding:22px 22px 26px;}
+  .litter-card h3{font-size:1.15rem;margin-bottom:10px;}
+  .litter-status{
+    display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    padding:4px 10px;border-radius:20px;margin-bottom:12px;
+  }
+  .litter-status.available{background:rgba(181,80,44,.14);color:var(--clay);}
+  .litter-status.reserved{background:rgba(107,95,82,.16);color:var(--muted);}
+  .litter-card p{margin:0;color:var(--ink-2);font-size:.92rem;}
+
   /* ---------- Gallery ---------- */
   .gallery-section{
     padding:110px 0;
-    background:var(--sand-2);
+    background:var(--sand);
     text-align:center;
   }
   .gallery-section .eyebrow,.gallery-section h2,.gallery-section .lead{margin-left:auto;margin-right:auto;}
@@ -305,6 +359,34 @@
   @media (min-width:760px){
     .split .container{grid-template-columns:1fr 1fr;gap:64px;}
     .breed-cards{grid-template-columns:repeat(4,1fr);}
+    .news-grid{grid-template-columns:repeat(3,1fr);}
+  }
+  @media (min-width:640px){
+    .litter-grid{grid-template-columns:repeat(2,1fr);}
+  }
+  @media (min-width:1000px){
+    .litter-grid{grid-template-columns:repeat(4,1fr);}
+  }
+  @media (min-width:901px){
+    /* Desktop dropdown flies out under "Náš chov" */
+    .dropdown{
+      position:absolute;top:100%;left:0;margin-top:14px;
+      background:var(--sand);
+      border:1px solid rgba(32,26,21,.1);
+      border-radius:var(--radius);
+      min-width:150px;
+      box-shadow:0 14px 28px rgba(32,26,21,.14);
+      opacity:0;visibility:hidden;transform:translateY(6px);
+      transition:opacity .18s ease, transform .18s ease, visibility .18s;
+      padding:8px;z-index:10;
+    }
+    .has-dropdown:hover .dropdown,
+    .has-dropdown.open .dropdown,
+    .has-dropdown:focus-within .dropdown{
+      opacity:1;visibility:visible;transform:translateY(0);
+    }
+    .dropdown li a{display:block;padding:10px 12px;font-size:.85rem;border-bottom:none;border-radius:2px;}
+    .dropdown li a:hover{color:var(--clay);background:var(--sand-2);}
   }
   @media (max-width:900px){
     .main-nav{
@@ -321,13 +403,21 @@
     .nav-toggle{display:flex;}
     .cta-grid{grid-template-columns:1fr;}
     .gallery-grid{grid-template-columns:repeat(2,1fr);}
+    .dropdown-item{justify-content:space-between;}
+    .dropdown-item a{flex:1 1 auto;}
+    .dropdown{
+      max-height:0;overflow:hidden;padding-left:14px;
+      transition:max-height .3s ease;
+    }
+    .has-dropdown.open .dropdown{max-height:260px;}
+    .dropdown li a{padding:10px 4px;font-size:.95rem;color:var(--muted);}
   }
   @media (min-width:820px){
     .contacts-grid{grid-template-columns:1.1fr 1fr;align-items:center;}
   }
   @media (max-width:480px){
     .gallery-grid{grid-template-columns:1fr 1fr;gap:10px;}
-    .split,.gallery-section,.cta-dark,.contacts{padding:76px 0;}
+    .split,.gallery-section,.cta-dark,.contacts,.news-section,.kennel-section{padding:76px 0;}
   }
 </style>
 </head>
@@ -343,6 +433,21 @@
       <ul>
         <li><a href="#domu">Domů</a></li>
         <li><a href="#o-nas">O nás</a></li>
+        <li><a href="#novinky">Novinky</a></li>
+        <li class="has-dropdown" id="kennelNavItem">
+          <div class="dropdown-item">
+            <a href="#nas-chov">Náš chov</a>
+            <button type="button" class="dropdown-toggle" id="dropdownToggle" aria-label="Rozbalit podnabídku Náš chov" aria-expanded="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+          <ul class="dropdown">
+            <li><a href="#vrh-a">Vrh A</a></li>
+            <li><a href="#vrh-b">Vrh B</a></li>
+            <li><a href="#vrh-c">Vrh C</a></li>
+            <li><a href="#vrh-d">Vrh D</a></li>
+          </ul>
+        </li>
         <li><a href="#o-plemeni">O plemeni</a></li>
         <li><a href="#galerie">Fotogalerie</a></li>
         <li><a href="#kontakty">Kontakty</a></li>
@@ -384,8 +489,81 @@
     </div>
   </section>
 
+  <!-- NOVINKY -->
+  <section id="novinky" class="news-section">
+    <div class="container">
+      <div class="news-head">
+        <span class="eyebrow">Co je nového</span>
+        <h2>Novinky</h2>
+        <p>Aktuality z naší chovatelské stanice — nová štěňata, výstavní úspěchy i důležitá oznámení.</p>
+      </div>
+      <div class="news-grid">
+        <article class="news-card">
+          <span class="news-date">12. srpna 2026</span>
+          <h3>Narodil se Vrh D</h3>
+          <p>S radostí oznamujeme, že se nám narodilo pět zdravých štěňátek. Podrobnosti a fotografie postupně přidáváme v sekci Náš chov.</p>
+        </article>
+        <article class="news-card">
+          <span class="news-date">3. června 2026</span>
+          <h3>Úspěch na mezinárodní výstavě</h3>
+          <p>Náš chovný pes získal titul CAC a posunul se o krok blíž k šampionátu. Děkujeme rozhodčím i všem, kdo nám drželi palce.</p>
+        </article>
+        <article class="news-card">
+          <span class="news-date">20. dubna 2026</span>
+          <h3>Poslední štěňata z Vrhu C</h3>
+          <p>Ve Vrhu C zbývají poslední dvě volná štěňata — fenka a pejsek. Ozvěte se nám přes kontaktní formulář níže.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- NÁŠ CHOV -->
+  <section id="nas-chov" class="kennel-section">
+    <div class="container">
+      <div class="kennel-head">
+        <span class="eyebrow">Naši chovní jedinci a vrhy</span>
+        <h2>Náš chov</h2>
+        <p>Chovné výsledky vedeme podle jednotlivých vrhů, které postupně značíme písmeny A, B, C a D. U každého najdete základní informace i aktuální dostupnost štěňat.</p>
+      </div>
+      <div class="litter-grid">
+        <article class="litter-card" id="vrh-a">
+          <div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z Vrhu A chovatelské stanice My Beautiful Savage"></div>
+          <div class="litter-card-body">
+            <h3>Vrh A</h3>
+            <span class="litter-status reserved">Odchováno</span>
+            <p>Datum narození: březen 2024. Rodiče pocházejí z evropských chovných linií. Všechna štěňata už odešla do nových rodin po celé Evropě.</p>
+          </div>
+        </article>
+        <article class="litter-card" id="vrh-b">
+          <div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z Vrhu B chovatelské stanice My Beautiful Savage"></div>
+          <div class="litter-card-body">
+            <h3>Vrh B</h3>
+            <span class="litter-status reserved">Odchováno</span>
+            <p>Datum narození: listopad 2024. Šest štěňat s výbornou povahou, dnes úspěšně reprezentují náš chov na výstavách.</p>
+          </div>
+        </article>
+        <article class="litter-card" id="vrh-c">
+          <div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z Vrhu C chovatelské stanice My Beautiful Savage"></div>
+          <div class="litter-card-body">
+            <h3>Vrh C</h3>
+            <span class="litter-status available">K rezervaci</span>
+            <p>Datum narození: leden 2026. Zbývají poslední dvě štěňátka — fenka a pejsek. Rádi s vámi domluvíme osobní návštěvu.</p>
+          </div>
+        </article>
+        <article class="litter-card" id="vrh-d">
+          <div class="photo-frame"><img data-basenji-img loading="lazy" alt="Basenji z Vrhu D chovatelské stanice My Beautiful Savage"></div>
+          <div class="litter-card-body">
+            <h3>Vrh D</h3>
+            <span class="litter-status available">Plánovaný vrh</span>
+            <p>Očekávané narození: podzim 2026. Zájemce o rezervaci předem rádi zapíšeme do pořadníku.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <!-- O PLEMENI -->
-  <section id="o-plemeni" class="split reverse">
+  <section id="o-plemeni" class="split reverse alt">
     <div class="container">
       <div class="photo-frame" id="breedPhoto">
         <img data-basenji-img loading="lazy" alt="Basenji v pohybu, ukázka typické stavby těla plemene">
@@ -515,11 +693,38 @@
     link.addEventListener('click', function(){
       mainNav.classList.remove('open');
       navToggle.setAttribute('aria-expanded','false');
+      if (kennelItem){
+        kennelItem.classList.remove('open');
+        if (dropdownToggle) dropdownToggle.setAttribute('aria-expanded','false');
+      }
     });
   });
 
+  /* "Náš chov" dropdown */
+  var kennelItem = document.getElementById('kennelNavItem');
+  var dropdownToggle = document.getElementById('dropdownToggle');
+  if (kennelItem && dropdownToggle){
+    dropdownToggle.addEventListener('click', function(e){
+      e.preventDefault();
+      var open = kennelItem.classList.toggle('open');
+      dropdownToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    document.addEventListener('click', function(e){
+      if (!kennelItem.contains(e.target)){
+        kennelItem.classList.remove('open');
+        dropdownToggle.setAttribute('aria-expanded','false');
+      }
+    });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape'){
+        kennelItem.classList.remove('open');
+        dropdownToggle.setAttribute('aria-expanded','false');
+      }
+    });
+  }
+
   /* Active link highlight on scroll */
-  var sections = ['domu','o-nas','o-plemeni','galerie','kontakty']
+  var sections = ['domu','o-nas','novinky','nas-chov','o-plemeni','galerie','kontakty']
     .map(function(id){ return document.getElementById(id); })
     .filter(Boolean);
   var navLinks = mainNav.querySelectorAll('a');
