@@ -158,7 +158,21 @@
     background:var(--grad);
     -webkit-background-clip:text;background-clip:text;color:transparent;
   }
-  .logo-paw{width:22px;height:22px;flex:0 0 auto;color:var(--clay);}
+  .logo-paw-badge{
+    width:36px;height:36px;border-radius:50%;flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--grad);
+  }
+  .logo-paw{width:19px;height:19px;flex:0 0 auto;color:#fff;}
+  @media (min-width:1140px){
+    .main-nav{
+      background:#fff;
+      border:1px solid rgba(32,26,21,.07);
+      border-radius:999px;
+      padding:6px 8px;
+      box-shadow:0 2px 10px rgba(32,26,21,.05);
+    }
+  }
   .main-nav > ul{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;}
   .main-nav a{
     display:inline-block;white-space:nowrap;
@@ -559,7 +573,7 @@
   @media (min-width:1000px){
     .litter-grid{grid-template-columns:repeat(4,1fr);}
   }
-  @media (min-width:901px){
+  @media (min-width:1140px){
     /* Desktop dropdown flies out under "Náš chov" */
     .dropdown{
       position:absolute;top:100%;left:0;margin-top:14px;
@@ -579,16 +593,22 @@
     .dropdown li a{display:block;padding:10px 12px;font-size:.85rem;border-bottom:none;border-radius:2px;}
     .dropdown li a:hover{color:var(--clay);background:var(--sand-2);}
   }
-  @media (max-width:900px){
+  @media (max-width:1139px){
     .main-nav{
       position:fixed;inset:var(--header-h) 0 0 0;
       background:var(--sand);
       transform:translateY(-110%);
-      transition:transform .3s ease;
+      transition:transform .3s ease, visibility .3s;
       padding:30px 24px;
       overflow-y:auto;
+      visibility:hidden;
+      pointer-events:none;
     }
-    .main-nav.open{transform:translateY(0);}
+    /* Belt-and-braces: on a very short viewport the -110% offset (based on
+       the panel's own computed height) can leave a sliver still overlapping
+       the header — pointer-events:none means that sliver can never intercept
+       a click on the hamburger button regardless. */
+    .main-nav.open{transform:translateY(0);visibility:visible;pointer-events:auto;}
     .main-nav > ul{flex-direction:column;align-items:stretch;gap:2px;}
     .main-nav a{display:inline-block;padding:14px 18px;font-size:1.05rem;border-radius:12px;}
     .main-nav a:hover{transform:none;}
@@ -617,10 +637,12 @@
 <header class="site-header">
   <div class="container">
     <a href="#domu" class="logo">
-      <svg class="logo-paw" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <circle cx="5.2" cy="10.6" r="2.1"/><circle cx="9.6" cy="6.4" r="2.3"/><circle cx="14.4" cy="6.4" r="2.3"/><circle cx="18.8" cy="10.6" r="2.1"/>
-        <path d="M12 13.4c-2.7 0-5 2.2-5 4.6 0 1.4 1.1 2.4 2.4 2.4.9 0 1.7-.5 2.6-.5s1.7.5 2.6.5c1.3 0 2.4-1 2.4-2.4 0-2.4-2.3-4.6-5-4.6z"/>
-      </svg>
+      <span class="logo-paw-badge">
+        <svg class="logo-paw" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <circle cx="5.2" cy="10.6" r="2.1"/><circle cx="9.6" cy="6.4" r="2.3"/><circle cx="14.4" cy="6.4" r="2.3"/><circle cx="18.8" cy="10.6" r="2.1"/>
+          <path d="M12 13.4c-2.7 0-5 2.2-5 4.6 0 1.4 1.1 2.4 2.4 2.4.9 0 1.7-.5 2.6-.5s1.7.5 2.6.5c1.3 0 2.4-1 2.4-2.4 0-2.4-2.3-4.6-5-4.6z"/>
+        </svg>
+      </span>
       My Beautiful <b>Savage</b>
     </a>
     <button class="nav-toggle" id="navToggle" aria-label="Otevřít menu" aria-expanded="false">
