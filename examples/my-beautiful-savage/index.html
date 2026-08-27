@@ -14,19 +14,21 @@
     --clay:#b5502c;
     --clay-dark:#8f3d20;
     --ochre:#d79a3b;
-    --sand:#f3e8d8;
-    --sand-2:#ece0cc;
+    --sand:#ffffff;
+    --sand-2:#f5f1eb;
     --ink:#201a15;
     --ink-2:#2c241d;
     --cream-text:#f6efe4;
     --muted:#6b5f52;
     --radius:4px;
+    --radius-photo:20px;
+    --grad:linear-gradient(135deg,var(--ochre),var(--clay));
     --maxw:1180px;
     --header-h:84px;
   }
 
   *,*::before,*::after{box-sizing:border-box;}
-  html{scroll-behavior:smooth;scroll-snap-type:y mandatory;}
+  html{scroll-behavior:smooth;scroll-snap-type:y proximity;}
   @media (prefers-reduced-motion:reduce){
     html{scroll-snap-type:none;scroll-behavior:auto;}
   }
@@ -47,10 +49,18 @@
   }
   a{color:inherit;text-decoration:none;}
   ul{margin:0;padding:0;list-style:none;}
-  section{scroll-margin-top:var(--header-h);scroll-snap-align:start;}
+  section{
+    scroll-margin-top:var(--header-h);scroll-snap-align:start;
+    transition:filter .6s ease;
+  }
+  main > section.chapter-dim{filter:brightness(.6) saturate(.85);}
+  @media (prefers-reduced-motion:reduce){
+    main > section.chapter-dim{filter:none;}
+  }
   .container{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
   .eyebrow{
-    display:block;
+    display:flex;align-items:center;gap:9px;
+    justify-content:center;
     font-size:.8rem;
     font-weight:700;
     letter-spacing:.18em;
@@ -58,21 +68,24 @@
     color:var(--clay);
     margin-bottom:14px;
   }
+  .eyebrow::before{content:"";display:inline-block;width:26px;height:2px;border-radius:2px;background:var(--grad);flex:0 0 auto;}
+  .split-text .eyebrow,.hero-content .eyebrow{justify-content:flex-start;}
   .eyebrow.light{color:var(--ochre);}
+  .eyebrow.light::before{background:linear-gradient(135deg,var(--ochre),#fff);}
   .btn{
     display:inline-block;
     padding:14px 30px;
-    background:var(--clay);
+    background:var(--grad);
     color:#fff;
     font-weight:700;
     letter-spacing:.06em;
     text-transform:uppercase;
     font-size:.82rem;
     border-radius:var(--radius);
-    border:2px solid var(--clay);
-    transition:background .2s ease, color .2s ease;
+    border:none;
+    transition:filter .2s ease, transform .2s ease;
   }
-  .btn:hover{background:transparent;color:var(--clay);}
+  .btn:hover{filter:brightness(1.1);transform:translateY(-2px);}
   .btn.outline{background:transparent;color:var(--cream-text);border-color:var(--cream-text);}
   .btn.outline:hover{background:var(--cream-text);color:var(--ink);}
 
@@ -105,29 +118,53 @@
   /* ---------- Header ---------- */
   .site-header{
     position:sticky;top:0;z-index:100;
-    background:rgba(243,232,216,.94);
-    backdrop-filter:blur(6px);
-    border-bottom:1px solid rgba(32,26,21,.08);
+    box-shadow:0 1px 0 rgba(32,26,21,.06);
+    transition:box-shadow .3s ease;
   }
+  /* The blur lives on its own layer, not directly on .site-header: a
+     backdrop-filter/filter on an element becomes a containing block for any
+     position:fixed descendant, which silently collapsed the mobile nav panel
+     (a fixed-position child further down) to near-zero height and left it
+     overlapping the hamburger button instead of parked off-screen. */
+  .site-header::before{
+    content:"";
+    position:absolute;inset:0;z-index:-1;
+    background:rgba(255,255,255,.82);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    transition:background-color .3s ease;
+  }
+  .site-header::after{
+    content:"";
+    display:block;height:3px;width:100%;
+    background:linear-gradient(90deg,var(--ochre),var(--clay) 50%,var(--ochre));
+  }
+  .site-header.scrolled{box-shadow:0 10px 30px rgba(32,26,21,.1);}
+  .site-header.scrolled::before{background:rgba(255,255,255,.94);}
   .site-header .container{
     height:var(--header-h);
     display:flex;align-items:center;justify-content:space-between;
+    gap:16px;
   }
   .logo{
     display:flex;align-items:center;gap:9px;
+    white-space:nowrap;flex:0 0 auto;
     font-family:'Archivo Black',sans-serif;
     font-size:1.15rem;
     text-transform:uppercase;
     letter-spacing:.02em;
   }
-  .logo b{color:var(--clay);}
+  .logo b{
+    background:var(--grad);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
   .logo-paw{width:22px;height:22px;flex:0 0 auto;color:var(--clay);}
-  .main-nav > ul{display:flex;align-items:center;gap:10px;}
+  .main-nav > ul{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;}
   .main-nav a{
-    display:inline-block;
-    font-weight:600;font-size:.9rem;
-    text-transform:uppercase;letter-spacing:.05em;
-    padding:9px 18px;
+    display:inline-block;white-space:nowrap;
+    font-weight:600;font-size:.86rem;
+    text-transform:uppercase;letter-spacing:.04em;
+    padding:9px 14px;
     border-radius:999px;
     transform:scale(1);
     transition:background-color .25s ease, color .25s ease, transform .25s ease;
@@ -141,8 +178,8 @@
   /* Dropdown: Náš chov */
   .has-dropdown{position:relative;}
   .dropdown-item{
-    display:flex;align-items:center;gap:2px;
-    padding:9px 10px 9px 18px;
+    display:flex;align-items:center;gap:2px;white-space:nowrap;
+    padding:9px 8px 9px 14px;
     border-radius:999px;
     transform:scale(1);
     transition:background-color .25s ease, color .25s ease, transform .25s ease;
@@ -222,7 +259,7 @@
     gap:48px;
     align-items:center;
   }
-  .split .photo-frame{aspect-ratio:4/3;}
+  .split .photo-frame{aspect-ratio:4/3;border-radius:var(--radius-photo);}
   .split-text h2{font-size:clamp(1.8rem,3.6vw,2.8rem);margin-bottom:22px;}
   .split-text p{max-width:56ch;color:var(--ink-2);font-size:1.02rem;}
   .split.reverse .container{direction:rtl;}
@@ -323,7 +360,7 @@
   .litter-grid{display:grid;grid-template-columns:1fr;gap:24px;}
   .litter-card{
     background:var(--sand-2);
-    border-radius:var(--radius);
+    border-radius:var(--radius-photo);
     overflow:hidden;
     scroll-margin-top:var(--header-h);
     cursor:pointer;
@@ -372,7 +409,7 @@
   #litterModalNote{margin:0;color:var(--ink-2);}
   .litter-modal-hint{margin:28px 0 18px;font-size:.85rem;color:var(--muted);font-style:italic;}
   .puppy-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
-  .puppy-card{background:var(--sand-2);border-radius:var(--radius);overflow:hidden;}
+  .puppy-card{background:var(--sand-2);border-radius:var(--radius-photo);overflow:hidden;}
   .puppy-card .photo-frame{aspect-ratio:1/1;border-radius:0;}
   .puppy-card-body{padding:12px 14px 14px;}
   .puppy-collar{display:flex;align-items:center;gap:8px;font-weight:700;font-size:.85rem;}
@@ -394,7 +431,7 @@
   .gallery-section h2{font-size:clamp(1.8rem,3.6vw,2.8rem);}
   .gallery-section .lead{max-width:56ch;color:var(--ink-2);margin-top:18px;margin-bottom:44px;}
   .gallery-item{aspect-ratio:1/1;cursor:zoom-in;}
-  .gallery-item .photo-frame{width:100%;height:100%;}
+  .gallery-item .photo-frame{width:100%;height:100%;border-radius:var(--radius-photo);}
 
   /* Lightbox */
   .lightbox{
@@ -403,7 +440,7 @@
     display:none;align-items:center;justify-content:center;padding:30px;
   }
   .lightbox.open{display:flex;}
-  .lightbox img{max-width:min(90vw,900px);max-height:85vh;border-radius:var(--radius);object-fit:contain;}
+  .lightbox img{max-width:min(90vw,900px);max-height:85vh;border-radius:var(--radius-photo);object-fit:contain;}
   .lightbox-close{
     position:absolute;top:22px;right:26px;
     width:44px;height:44px;border-radius:50%;border:none;
@@ -442,8 +479,8 @@
   .cta-card .icon{
     width:52px;height:52px;
     display:flex;align-items:center;justify-content:center;
-    border-radius:50%;background:rgba(215,154,59,.16);
-    color:var(--ochre);margin-bottom:22px;
+    border-radius:50%;background:var(--grad);
+    color:#fff;margin-bottom:22px;
   }
   .cta-card .icon svg{width:26px;height:26px;}
   .cta-card h3{font-size:1.05rem;margin-bottom:12px;}
@@ -458,16 +495,16 @@
     display:grid;grid-template-columns:1fr;gap:36px;
   }
   .map-wrap{
-    border-radius:var(--radius);overflow:hidden;
+    border-radius:var(--radius-photo);overflow:hidden;
     aspect-ratio:4/3;
     border:1px solid rgba(32,26,21,.1);
   }
-  .map-wrap iframe{width:100%;height:100%;border:0;filter:grayscale(.25) sepia(.12);}
+  .map-wrap iframe{width:100%;height:100%;border:0;filter:grayscale(.4);}
   .contact-list{display:flex;flex-direction:column;gap:26px;justify-content:center;}
   .contact-row{display:flex;gap:18px;align-items:flex-start;}
   .contact-row .icon{
     flex:0 0 auto;width:46px;height:46px;border-radius:50%;
-    background:var(--clay);color:#fff;
+    background:var(--grad);color:#fff;
     display:flex;align-items:center;justify-content:center;
   }
   .contact-row .icon svg{width:22px;height:22px;}
@@ -478,7 +515,37 @@
   .contact-row p{margin:0;font-weight:600;font-size:1.02rem;}
 
   /* ---------- Footer ---------- */
-  footer{background:var(--ink);color:#a89c8b;text-align:center;padding:28px 24px;font-size:.85rem;}
+  .site-footer{background:var(--ink);position:relative;}
+  .site-footer::before{
+    content:"";display:block;height:3px;
+    background:linear-gradient(90deg,var(--ochre),var(--clay) 50%,var(--ochre));
+  }
+  .footer-top{padding:64px 0 40px;}
+  .footer-grid{display:grid;grid-template-columns:1fr;gap:40px;}
+  .footer-brand .logo{color:#fff;margin-bottom:16px;}
+  .footer-brand .logo b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .footer-brand p{max-width:34ch;color:#a89c8b;font-size:.92rem;margin:0;}
+  .footer-col h4{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ochre);margin:0 0 16px;font-weight:700;}
+  .footer-col ul{display:flex;flex-direction:column;gap:11px;}
+  .footer-col a{color:#c9beae;font-size:.92rem;transition:color .2s ease;}
+  .footer-col a:hover{color:#fff;}
+  .footer-contact li{color:#c9beae;font-size:.92rem;}
+  .footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding:22px 0;}
+  .footer-bottom-row{
+    display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center;
+    font-size:.82rem;color:#8a7d6d;
+  }
+  .footer-bottom-row p{margin:0;}
+  .back-to-top{
+    display:inline-flex;align-items:center;gap:6px;
+    color:#c9beae;font-weight:700;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;
+    transition:color .2s ease, transform .2s ease;
+  }
+  .back-to-top:hover{color:var(--ochre);transform:translateY(-2px);}
+  @media (min-width:760px){
+    .footer-grid{grid-template-columns:1.2fr 1fr 1fr;}
+    .footer-bottom-row{flex-direction:row;justify-content:space-between;text-align:left;}
+  }
 
   /* ---------- Responsive ---------- */
   @media (min-width:760px){
@@ -870,7 +937,45 @@
 
 </main>
 
-<footer>© 2026 My Beautiful Savage. Všechna práva vyhrazena.</footer>
+<footer class="site-footer">
+  <div class="footer-top">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a href="#domu" class="logo">
+          <svg class="logo-paw" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="5.2" cy="10.6" r="2.1"/><circle cx="9.6" cy="6.4" r="2.3"/><circle cx="14.4" cy="6.4" r="2.3"/><circle cx="18.8" cy="10.6" r="2.1"/>
+            <path d="M12 13.4c-2.7 0-5 2.2-5 4.6 0 1.4 1.1 2.4 2.4 2.4.9 0 1.7-.5 2.6-.5s1.7.5 2.6.5c1.3 0 2.4-1 2.4-2.4 0-2.4-2.3-4.6-5-4.6z"/>
+          </svg>
+          My Beautiful <b>Savage</b>
+        </a>
+        <p>Chovatelská stanice psů plemene basenji — zdraví, socializace a láska ke každému štěněti.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigace</h4>
+        <ul>
+          <li><a href="#o-nas">O nás</a></li>
+          <li><a href="#nas-chov">Náš chov</a></li>
+          <li><a href="#o-plemeni">O plemeni</a></li>
+          <li><a href="#galerie">Fotogalerie</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Kontakt</h4>
+        <ul class="footer-contact">
+          <li>Vzorová 1, 100 00 Praha 10</li>
+          <li>+420 900 000 000</li>
+          <li>hello@mybeautifulsavage.example</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container footer-bottom-row">
+      <p>© 2026 My Beautiful Savage. Všechna práva vyhrazena.</p>
+      <a href="#domu" class="back-to-top">Nahoru ↑</a>
+    </div>
+  </div>
+</footer>
 
 <div class="lightbox" id="lightbox">
   <button class="lightbox-close" id="lightboxClose" aria-label="Zavřít">&times;</button>
@@ -894,6 +999,12 @@
 <script>
 (function(){
   "use strict";
+
+  /* Header gains a stronger backdrop + shadow once the page has scrolled */
+  var siteHeader = document.querySelector('.site-header');
+  window.addEventListener('scroll', function(){
+    siteHeader.classList.toggle('scrolled', window.scrollY > 24);
+  }, { passive: true });
 
   /* Mobile nav toggle */
   var navToggle = document.getElementById('navToggle');
@@ -936,23 +1047,24 @@
     });
   }
 
-  /* Active link highlight on scroll */
-  var sections = ['domu','o-nas','novinky','nas-chov','o-plemeni','galerie','kontakty']
-    .map(function(id){ return document.getElementById(id); })
-    .filter(Boolean);
+  /* Active link highlight + "current chapter" spotlight: the section you're
+     reading stays at full brightness, every other chapter dims a touch
+     (the header is a sibling of <main>, never a <section>, so it's untouched). */
+  var pageSections = Array.prototype.slice.call(document.querySelectorAll('main > section'));
   var navLinks = mainNav.querySelectorAll('a');
   if ('IntersectionObserver' in window){
     var observer = new IntersectionObserver(function(entries){
       entries.forEach(function(entry){
+        entry.target.classList.toggle('chapter-dim', !entry.isIntersecting);
         if (entry.isIntersecting){
           var id = entry.target.id;
           navLinks.forEach(function(l){
-            l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+            l.classList.toggle('active', !!id && l.getAttribute('href') === '#' + id);
           });
         }
       });
     }, { rootMargin: '-45% 0px -50% 0px' });
-    sections.forEach(function(s){ observer.observe(s); });
+    pageSections.forEach(function(s){ observer.observe(s); });
   }
 
   /* Load free basenji photos (Dog CEO API — public, free-to-use dog images by breed)
@@ -1206,8 +1318,8 @@
 
   /* Up/Down (and Page Up/Down) move exactly one chapter at a time, matching the
      section snap-scroll — browsers vary in how they combine native arrow-key
-     scrolling with scroll-snap, so this replaces that with one deterministic jump. */
-  var pageSections = Array.prototype.slice.call(document.querySelectorAll('main > section'));
+     scrolling with scroll-snap, so this replaces that with one deterministic jump.
+     (pageSections is the same list gathered above for the chapter-dim observer.) */
   var headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h'), 10) || 84;
   function currentPageIndex(){
     /* scroll-margin-top (= header height) means a snapped section's top edge sits
