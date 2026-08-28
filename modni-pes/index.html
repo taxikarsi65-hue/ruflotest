@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MODNÍ PES — Psí Fashion Editorial</title>
+<meta name="description" content="Modní Pes — grooming studio v Praze a Ústí nad Labem. Ne další temný spa salon. Světlý, redakční, drzý přístup k péči o vašeho psa.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500;1,9..144,700&family=Inter:wght@400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="masthead" id="top">
+  <div class="masthead__bar">
+    <span class="masthead__issue">VYDÁNÍ Č. 01 — PRAHA / ÚSTÍ</span>
+    <span class="masthead__issue masthead__issue--right">JARO / LÉTO 2026</span>
+  </div>
+  <div class="masthead__row">
+    <a href="#top" class="masthead__logo">MODNÍ PES</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Otevřít menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="masthead__nav" id="mainNav">
+      <a href="#lookbook">STYLE</a>
+      <a href="#spa">SPA</a>
+      <a href="#trim">TRIM</a>
+      <a href="#cenik">CENÍK</a>
+      <a href="#kontakt">KONTAKT</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero__photo hero__photo--cover" data-caption="Foto: Ateliér Modní Pes — Model: Bella, border kolie">
+    <span class="hero__photo-tag">COVER STORY</span>
+  </div>
+  <div class="hero__copy">
+    <p class="kicker">Grooming, který se nebere vážně — jen vaše psy</p>
+    <h1 class="hero__title">PSÍ MÓDA<br>MÁ NOVÁ<br>PRAVIDLA</h1>
+    <p class="hero__lede">Žádné tmavé spa. Žádné pastelové pejsky s mašličkou. Modní Pes je redakce, ne salon — světlý prostor, ostrý střih a smysl pro humor.</p>
+    <a href="#kontakt" class="btn btn--primary">OBJEDNAT TERMÍN <span class="btn__arrow">→</span></a>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__track">
+    <span>★ STŘIH</span><span>★ KOUPEL A FÉN</span><span>★ ÚPRAVA SRSTI</span><span>★ SPA PRO TLAPKY</span><span>★ ČIŠTĚNÍ UŠÍ</span><span>★ STYLING NA VÝSTAVY</span><span>★ TRIMOVÁNÍ</span><span>★ BARVENÍ PŘÍRODNÍ PIGMENTY</span>
+    <span>★ STŘIH</span><span>★ KOUPEL A FÉN</span><span>★ ÚPRAVA SRSTI</span><span>★ SPA PRO TLAPKY</span><span>★ ČIŠTĚNÍ UŠÍ</span><span>★ STYLING NA VÝSTAVY</span><span>★ TRIMOVÁNÍ</span><span>★ BARVENÍ PŘÍRODNÍ PIGMENTY</span>
+  </div>
+</div>
+
+<section class="lookbook" id="lookbook">
+  <h2 class="section-title">LOOKBOOK <span>SLUŽEB</span></h2>
+  <p class="section-sub">Naše služby nejsou ceník. Jsou to looky.</p>
+
+  <div class="lookbook__grid">
+
+    <figure class="polaroid" style="--rot:-4deg" id="spa">
+      <div class="polaroid__photo" data-caption="STYLE">
+        <span class="tag">STYLE</span>
+      </div>
+      <figcaption>
+        <strong>Editorial Střih</strong>
+        <span>Model: Max, pudl — foto: Studio MP</span>
+      </figcaption>
+    </figure>
+
+    <figure class="polaroid" style="--rot:3deg">
+      <div class="polaroid__photo" data-caption="SPA">
+        <span class="tag">SPA</span>
+      </div>
+      <figcaption>
+        <strong>Wellness Rituál</strong>
+        <span>Model: Rita, kokršpaněl — foto: Studio MP</span>
+      </figcaption>
+    </figure>
+
+    <figure class="polaroid" style="--rot:-2deg" id="trim">
+      <div class="polaroid__photo" data-caption="TRIM">
+        <span class="tag">TRIM</span>
+      </div>
+      <figcaption>
+        <strong>Precizní Trimování</strong>
+        <span>Model: Oskar, teriér — foto: Studio MP</span>
+      </figcaption>
+    </figure>
+
+    <figure class="polaroid" style="--rot:5deg">
+      <div class="polaroid__photo" data-caption="STYLE">
+        <span class="tag">STYLE</span>
+      </div>
+      <figcaption>
+        <strong>Výstavní Styling</strong>
+        <span>Model: Bella, border kolie — foto: Studio MP</span>
+      </figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section class="spread">
+  <h2 class="section-title spread__title">LOOK 01 <span>/</span> LOOK 02</h2>
+  <div class="spread__grid">
+    <div class="spread__panel">
+      <span class="spread__label">LOOK 01 — PŘED</span>
+      <div class="spread__photo" data-caption="Před"></div>
+    </div>
+    <div class="spread__panel">
+      <span class="spread__label">LOOK 02 — PO</span>
+      <div class="spread__photo" data-caption="Po"></div>
+    </div>
+  </div>
+  <p class="spread__caption">Proměna, ne retuš. Každý pes je jiný model — my jen najdeme jeho lepší úhel.</p>
+</section>
+
+<section class="price-index" id="cenik">
+  <h2 class="section-title">CENÍK <span>/ OBSAH</span></h2>
+  <ol class="price-index__list">
+    <li><span class="price-index__name">Střih</span><span class="price-index__dots"></span><span class="price-index__price">od 1200 Kč</span></li>
+    <li><span class="price-index__name">Koupel a fén</span><span class="price-index__dots"></span><span class="price-index__price">od 600 Kč</span></li>
+    <li><span class="price-index__name">Úprava srsti</span><span class="price-index__dots"></span><span class="price-index__price">od 900 Kč</span></li>
+    <li><span class="price-index__name">Spa pro tlapky</span><span class="price-index__dots"></span><span class="price-index__price">od 350 Kč</span></li>
+    <li><span class="price-index__name">Čištění uší a drápky</span><span class="price-index__dots"></span><span class="price-index__price">od 250 Kč</span></li>
+    <li><span class="price-index__name">Styling na výstavy</span><span class="price-index__dots"></span><span class="price-index__price">od 1500 Kč</span></li>
+    <li><span class="price-index__name">Kompletní balíček</span><span class="price-index__dots"></span><span class="price-index__price">od 1800 Kč</span></li>
+  </ol>
+  <p class="price-index__note">Konečná cena závisí na plemeni, velikosti a stavu srsti. Přesnou cenu potvrdíme při objednání.</p>
+</section>
+
+<section class="editorial">
+  <p class="editorial__mark">EDITORIAL</p>
+  <blockquote class="editorial__quote">
+    „Modní znamená stylový. Ne přehnaný, ne pompézní — jen sebevědomý. Přesně takový chceme, aby byl váš pes, když odchází z našeho studia.“
+  </blockquote>
+  <p class="editorial__signature">— Redakce Modní Pes</p>
+</section>
+
+<section class="contact" id="kontakt">
+  <h2 class="section-title">OBJEDNAT <span>SE</span></h2>
+  <div class="contact__grid">
+    <div class="contact__block">
+      <h3>PRAHA</h3>
+      <p>Vinohradská 12<br>120 00 Praha 2</p>
+      <p><a href="tel:+420123456789">+420 123 456 789</a></p>
+    </div>
+    <div class="contact__block">
+      <h3>ÚSTÍ NAD LABEM</h3>
+      <p>Mírové náměstí 4<br>400 01 Ústí nad Labem</p>
+      <p><a href="tel:+420987654321">+420 987 654 321</a></p>
+    </div>
+    <div class="contact__block">
+      <h3>OTEVÍRACÍ DOBA</h3>
+      <p>Po–Pá 9:00–18:00<br>So 9:00–13:00<br>Ne zavřeno</p>
+    </div>
+  </div>
+  <a href="mailto:ahoj@modnipes.cz" class="btn btn--outline">NAPSAT EMAIL <span class="btn__arrow">→</span></a>
+</section>
+
+<footer class="masthead-footer">
+  <div class="masthead-footer__top">
+    <span class="masthead-footer__logo">MODNÍ PES</span>
+    <div class="masthead-footer__social">
+      <a href="#">INSTAGRAM</a>
+      <a href="#">FACEBOOK</a>
+      <a href="#">TIKTOK</a>
+    </div>
+  </div>
+  <div class="masthead-footer__bottom">
+    <span>© 2026 MODNÍ PES. VŠECHNA PRÁVA VYHRAZENA.</span>
+    <span>PRAHA / ÚSTÍ NAD LABEM — VYDÁNÍ Č. 01</span>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
