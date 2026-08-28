@@ -234,6 +234,13 @@
   .hero .photo-frame{
     position:absolute;inset:0;border-radius:0;
   }
+  /* Source photo is a tall portrait crop; bias the visible band toward the
+     dog's face/ears (upper third) instead of a dead-center crop that would
+     land on the neck/chest on wide screens. */
+  .hero .photo-frame img{object-position:48% 55%;}
+  @media (max-width:600px){
+    .hero .photo-frame img{object-position:60% 48%;}
+  }
   .hero-scrim{
     position:absolute;inset:0;z-index:2;
     background:linear-gradient(180deg,rgba(32,26,21,.05) 0%,rgba(32,26,21,.15) 45%,rgba(32,26,21,.88) 100%);
@@ -679,13 +686,13 @@
 
   <!-- HERO -->
   <section id="domu" class="hero">
-    <div class="photo-frame" id="heroPhoto">
-      <img data-basenji-img loading="eager" alt="Basenji hledící do kamery, uši vztyčené">
+    <div class="photo-frame loaded" id="heroPhoto">
+      <img class="loaded" src="images/hero-basenji.jpg" alt="Basenji hledící do dálky, uši vztyčené" width="800" height="1200">
     </div>
     <div class="hero-scrim"></div>
     <div class="hero-content">
       <span class="eyebrow light">Chovatelská stanice plemene basenji</span>
-      <h1>Vychováváme štěňata basenji s láskou a péčí</h1>
+      <h1>Vychováváme basenji s láskou a péčí</h1>
     </div>
     <a href="#o-nas" class="scroll-cue" aria-label="Posunout dolů">
       <span>Scroll</span>
