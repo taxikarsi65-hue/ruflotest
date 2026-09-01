@@ -111,6 +111,90 @@
   );
   counters.forEach((el) => countObserver.observe(el));
 
+  /* ---------- price calculator ---------- */
+  const calc = {
+    hourly: 890,
+    loaderHourly: 350,
+    floorFee: 100,
+  };
+  const hoursInput = document.getElementById("calc-hours");
+  const hoursValue = document.getElementById("calc-hours-value");
+  const zoneSelect = document.getElementById("calc-zone");
+  const loaderCheck = document.getElementById("calc-loader");
+  const floorField = document.getElementById("calc-floor-field");
+  const floorInput = document.getElementById("calc-floor");
+  const floorValue = document.getElementById("calc-floor-value");
+  const totalEl = document.getElementById("calc-total");
+  const breakdownEl = document.getElementById("calc-breakdown");
+  const calcCta = document.getElementById("calc-cta");
+  const zoneLabels = {
+    0: "Jen po Ústí nad Labem",
+    200: "Blízké okolí (do 30 km)",
+    350: "Region (30–60 km)",
+    500: "Praha / okolí do 100 km",
+  };
+
+  const fmtKc = (n) => n.toLocaleString("cs-CZ");
+
+  function updateCalc() {
+    if (!hoursInput || !totalEl) return;
+
+    const hours = parseInt(hoursInput.value, 10);
+    const zoneFee = parseInt(zoneSelect.value, 10);
+    const wantsLoader = loaderCheck.checked;
+    const floors = parseInt(floorInput.value, 10);
+
+    hoursValue.textContent = hours + " hod";
+    floorValue.textContent = floors;
+
+    floorInput.disabled = !wantsLoader;
+    floorField.classList.toggle("is-disabled", !wantsLoader);
+    if (!wantsLoader) {
+      floorInput.value = 0;
+    }
+    const activeFloors = wantsLoader ? parseInt(floorInput.value, 10) : 0;
+
+    const base = calc.hourly * hours;
+    const loaderCost = wantsLoader ? calc.loaderHourly * hours : 0;
+    const floorCost = wantsLoader ? activeFloors * calc.floorFee : 0;
+    const total = base + zoneFee + loaderCost + floorCost;
+
+    totalEl.textContent = fmtKc(total);
+
+    const rows = [
+      [`Základní sazba (${hours} hod × 890 Kč)`, fmtKc(base) + " Kč"],
+      [zoneLabels[zoneFee], zoneFee ? "+" + fmtKc(zoneFee) + " Kč" : "0 Kč"],
+    ];
+    if (wantsLoader) {
+      rows.push([`Řidič + nakladač (${hours} hod × 350 Kč)`, "+" + fmtKc(loaderCost) + " Kč"]);
+      if (activeFloors > 0) {
+        rows.push([`Patro bez výtahu (${activeFloors}×)`, "+" + fmtKc(floorCost) + " Kč"]);
+      }
+    }
+
+    breakdownEl.innerHTML = rows.map(([label, value]) => `<li><span>${label}</span><span>${value}</span></li>`).join("");
+
+    if (calcCta) {
+      const summaryParts = [`${hours} hod`, zoneLabels[zoneFee]];
+      if (wantsLoader) summaryParts.push("řidič + nakladač" + (activeFloors ? `, patro ${activeFloors}×` : ""));
+      calcCta.dataset.summary = `Orientační kalkulace: ${summaryParts.join(", ")} — cca ${fmtKc(total)} Kč.`;
+    }
+  }
+
+  [hoursInput, zoneSelect, loaderCheck, floorInput].forEach((el) => {
+    if (el) el.addEventListener("input", updateCalc);
+  });
+  updateCalc();
+
+  if (calcCta) {
+    calcCta.addEventListener("click", () => {
+      const textarea = document.querySelector('textarea[name="co_vezeme"]');
+      if (textarea && calcCta.dataset.summary && !textarea.value) {
+        textarea.value = calcCta.dataset.summary;
+      }
+    });
+  }
+
   /* ---------- faq: close others when one opens ---------- */
   const faqItems = document.querySelectorAll(".faq-item");
   faqItems.forEach((item) => {

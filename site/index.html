@@ -151,6 +151,56 @@
       </div>
 
       <p class="price-note reveal">Přesnou částku dostanete už při poptávce — dřív, než cokoliv naložíme do vozu.</p>
+
+      <div class="calc reveal" data-delay="0">
+        <div class="calc-head">
+          <p class="eyebrow eyebrow-dark">Orientační odhad</p>
+          <h3 class="calc-title">Spočítejte si cenu dopředu</h3>
+          <p class="calc-sub">Nastavte parametry stěhování a hned uvidíte přibližnou částku. Finální cenu vždy potvrdíme při poptávce.</p>
+        </div>
+
+        <div class="calc-body">
+          <div class="calc-controls">
+            <div class="calc-field">
+              <div class="calc-field-label">
+                <span>Počet hodin</span>
+                <span class="calc-field-value" id="calc-hours-value">2 hod</span>
+              </div>
+              <input type="range" id="calc-hours" min="1" max="8" step="1" value="2" aria-label="Počet hodin">
+            </div>
+
+            <div class="calc-field">
+              <div class="calc-field-label"><span>Kam jedeme</span></div>
+              <select id="calc-zone" aria-label="Vzdálenost">
+                <option value="0">Jen po Ústí nad Labem</option>
+                <option value="200">Blízké okolí (do 30 km)</option>
+                <option value="350">Region (30–60 km)</option>
+                <option value="500">Praha / okolí do 100 km</option>
+              </select>
+            </div>
+
+            <label class="calc-toggle">
+              <input type="checkbox" id="calc-loader">
+              <span>Chci řidiče + nakladače (pomoc s nošením)</span>
+            </label>
+
+            <div class="calc-field calc-field--floor" id="calc-floor-field">
+              <div class="calc-field-label">
+                <span>Patro bez výtahu</span>
+                <span class="calc-field-value" id="calc-floor-value">0</span>
+              </div>
+              <input type="range" id="calc-floor" min="0" max="5" step="1" value="0" aria-label="Patro bez výtahu" disabled>
+            </div>
+          </div>
+
+          <div class="calc-result">
+            <span class="calc-result-label">Orientační cena</span>
+            <span class="calc-result-value"><span id="calc-total">1&nbsp;780</span>&nbsp;Kč</span>
+            <ul class="calc-breakdown" id="calc-breakdown"></ul>
+            <a href="#kontakt" class="btn btn-accent btn-block" id="calc-cta">Poptat s touto kalkulací</a>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -335,18 +385,76 @@
   <section class="section section-dark" id="autopark">
     <div class="wrap fleet-grid">
       <div class="fleet-media reveal">
-        <svg viewBox="0 0 480 320" width="100%" height="100%" role="img" aria-label="Ilustrace dodávky">
-          <rect x="0" y="0" width="480" height="320" fill="none"/>
+        <svg viewBox="0 0 480 320" width="100%" height="100%" role="img" aria-label="Ilustrace dodávky při nakládce za soumraku">
+          <defs>
+            <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#1d1f25"/>
+              <stop offset="65%" stop-color="#232017"/>
+              <stop offset="100%" stop-color="#2c2510"/>
+            </linearGradient>
+            <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#d4ff4f" stop-opacity=".55"/>
+              <stop offset="100%" stop-color="#d4ff4f" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="roadGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#26282f"/>
+              <stop offset="100%" stop-color="#101116"/>
+            </linearGradient>
+            <linearGradient id="vanBody" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#e2ff8c"/>
+              <stop offset="100%" stop-color="#b9e63f"/>
+            </linearGradient>
+            <linearGradient id="vanCab" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#cdec6e"/>
+              <stop offset="100%" stop-color="#9fcf2f"/>
+            </linearGradient>
+            <radialGradient id="shadowGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#000" stop-opacity=".45"/>
+              <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
+          <rect x="0" y="0" width="480" height="320" fill="url(#skyGrad)"/>
+          <circle cx="392" cy="70" r="110" fill="url(#sunGlow)"/>
+          <circle cx="392" cy="70" r="26" fill="#f5ffd8" opacity=".9"/>
+
+          <g opacity=".35" fill="#0d0e11">
+            <rect x="0" y="150" width="46" height="80"/>
+            <rect x="52" y="130" width="34" height="100"/>
+            <rect x="0" y="118" width="20" height="10"/>
+            <rect x="60" y="112" width="18" height="10"/>
+          </g>
+
+          <rect x="0" y="222" width="480" height="98" fill="url(#roadGrad)"/>
+          <g stroke="#d4ff4f" stroke-width="4" stroke-dasharray="22 18" opacity=".55">
+            <line x1="0" y1="270" x2="480" y2="270"/>
+          </g>
+
+          <ellipse cx="230" cy="284" rx="150" ry="16" fill="url(#shadowGrad)"/>
+
+          <!-- person carrying a box, standing clear of the van silhouette -->
+          <g transform="translate(400,152)" opacity=".95">
+            <ellipse cx="14" cy="75" rx="17" ry="4" fill="#000" opacity=".3"/>
+            <circle cx="14" cy="8" r="9" fill="#0d0e11"/>
+            <path d="M0 30c0-11 6-18 14-18s14 7 14 18v44H0V30Z" fill="#0d0e11"/>
+            <rect x="3" y="27" width="24" height="20" rx="3" fill="#d4ff4f"/>
+            <path d="M3 29 15 20 27 31l-8 8Z" fill="#0d0e11" opacity=".5"/>
+          </g>
+
           <g class="van-illustration">
-            <rect x="40" y="120" width="260" height="110" rx="10"/>
-            <path d="M300 150h70l50 55v25H300v-80Z"/>
-            <circle class="van-wheel" cx="110" cy="235" r="26"/>
-            <circle class="van-wheel" cx="360" cy="235" r="26"/>
-            <rect class="van-window" x="325" y="165" width="34" height="26" rx="3"/>
-            <line class="van-stripe" x1="40" y1="185" x2="300" y2="185"/>
+            <rect x="46" y="118" width="230" height="106" rx="14" fill="url(#vanBody)"/>
+            <path d="M276 140h58l46 48v20l0 16h-104V140Z" fill="url(#vanCab)"/>
+            <rect class="van-window" x="298" y="156" width="34" height="26" rx="4"/>
+            <line class="van-stripe" x1="46" y1="178" x2="276" y2="178"/>
+            <rect x="46" y="118" width="230" height="10" rx="5" fill="#f5ffd8" opacity=".55"/>
+            <line x1="276" y1="118" x2="276" y2="224" stroke="#12130f" stroke-width="3" opacity=".5"/>
+            <circle class="van-wheel" cx="112" cy="228" r="27"/>
+            <circle class="van-wheel" cx="340" cy="228" r="27"/>
+            <circle cx="112" cy="228" r="9" fill="#3a3d46"/>
+            <circle cx="340" cy="228" r="9" fill="#3a3d46"/>
           </g>
         </svg>
-        <span class="media-badge">Zástupný obrázek — nahraďte reálnou fotkou fleetu</span>
+        <span class="media-badge">Ilustrace místo fotky — nahraďte reálným snímkem vozu a týmu</span>
       </div>
 
       <div class="fleet-info reveal" data-delay="1">
