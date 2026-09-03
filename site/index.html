@@ -172,22 +172,57 @@
             <div class="calc-field">
               <div class="calc-field-label"><span>Kam jedeme</span></div>
               <select id="calc-zone" aria-label="Vzdálenost">
-                <option value="0">Jen po Ústí nad Labem</option>
-                <option value="200">Blízké okolí (do 30 km)</option>
-                <option value="350">Region (30–60 km)</option>
-                <option value="500">Praha / okolí do 100 km</option>
+                <option value="0">Jen po Ústí nad Labem — 0 Kč</option>
+                <option value="120">Blízké okolí (do 15 km) — +120 Kč</option>
+                <option value="200">Okolí Ústí (do 30 km) — +200 Kč</option>
+                <option value="350">Region (30–60 km) — +350 Kč</option>
+                <option value="430">Vzdálenější region (60–80 km) — +430 Kč</option>
+                <option value="500">Praha / okolí do 100 km — +500 Kč</option>
               </select>
             </div>
 
-            <label class="calc-toggle">
-              <input type="checkbox" id="calc-loader">
-              <span>Chci řidiče + nakladače (pomoc s nošením)</span>
-            </label>
+            <div class="calc-field">
+              <div class="calc-field-label"><span>Pomoc s nakládkou</span></div>
+              <div class="calc-radio-group" role="radiogroup" aria-label="Pomoc s nakládkou">
+                <label class="calc-radio">
+                  <input type="radio" name="calc-helper" value="0" checked>
+                  <span class="calc-radio-text">
+                    <strong>Jen řidič</strong>
+                    <small>Nošení a nakládku řešíte sami</small>
+                  </span>
+                  <span class="calc-radio-price">0 Kč</span>
+                </label>
+                <label class="calc-radio">
+                  <input type="radio" name="calc-helper" value="250">
+                  <span class="calc-radio-text">
+                    <strong>Řidič, co přiloží ruku</strong>
+                    <small>Mezi jízdami pomůže i s nošením</small>
+                  </span>
+                  <span class="calc-radio-price">+250 Kč/hod</span>
+                </label>
+                <label class="calc-radio">
+                  <input type="radio" name="calc-helper" value="350">
+                  <span class="calc-radio-text">
+                    <strong>Řidič + samostatný nakladač</strong>
+                    <small>Druhý člověk jen na nošení věcí</small>
+                  </span>
+                  <span class="calc-radio-price">+350 Kč/hod</span>
+                </label>
+                <label class="calc-radio">
+                  <input type="radio" name="calc-helper" value="550">
+                  <span class="calc-radio-text">
+                    <strong>Řidič i nakladač nosí spolu</strong>
+                    <small>Řidič pomáhá + samostatný nakladač — nejrychlejší nakládka</small>
+                  </span>
+                  <span class="calc-radio-price">+550 Kč/hod</span>
+                </label>
+              </div>
+            </div>
 
             <div class="calc-field calc-field--floor" id="calc-floor-field">
               <div class="calc-field-label">
                 <span>Patro bez výtahu</span>
-                <span class="calc-field-value" id="calc-floor-value">0</span>
+                <span class="calc-field-value" id="calc-floor-value">bez patra</span>
               </div>
               <input type="range" id="calc-floor" min="0" max="5" step="1" value="0" aria-label="Patro bez výtahu" disabled>
             </div>
