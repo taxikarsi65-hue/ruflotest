@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Летающая Tesla</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b0f1a; color: #fff; font-family: sans-serif; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { max-width: 100%; max-height: 100%; background: #0b0f1a; }
+</style>
+</head>
+<body>
+<canvas id="game" width="900" height="500"></canvas>
+<script>
+const cv = document.getElementById('game');
+const ctx = cv.getContext('2d');
+const W = cv.width, H = cv.height;
+
+const keys = {};
+addEventListener('keydown', e => {
+  keys[e.key] = true;
+  if (e.key.startsWith('Arrow') || e.key === ' ') e.preventDefault();
+  if (over && (e.key === ' ' || e.key === 'Enter')) reset();
+});
+addEventListener('keyup', e => { keys[e.key] = false; });
+
+let car, obstacles, score, speed, spawnT, over, best = 0, t = 0;
+
+function reset() {
+  car = { x: 150, y: H / 2, w: 90, h: 30, vx: 0, vy: 0 };
+  obstacles = [];
+  score = 0; speed = 4; spawnT = 0; over = false;
+}
+reset();
+
+// звёзды и город для фона
+const stars = Array.from({ length: 60 }, () => ({ x: Math.random() * W, y: Math.random() * H * 0.6, r: Math.random() * 1.5 + 0.3 }));
+const skyline = layer(0.6, 40, 120, 30, 60, '#141c33');
+const skyline2 = layer(1.2, 60, 180, 40, 80, '#0d1426');
+function layer(k, minH, maxH, minW, maxW, color) {
+  const b = []; let x = 0;
+  while (x < W * 2) { const w = minW + Math.random() * (maxW - minW); b.push({ x, w, h: minH + Math.random() * (maxH - minH) }); x += w + 4; }
+  return { b, k, color, off: 0 };
+}
+
+function spawn() {
+  const r = Math.random();
+  if (r < 0.4) {            // башня снизу
+    const h = 80 + Math.random() * 170;
+    obstacles.push({ type: 'tower', x: W + 20, y: H - 40 - h, w: 50, h });
+  } else if (r < 0.7) {     // башня сверху (подвешенная)
+    const h = 60 + Math.random() * 130;
+    obstacles.push({ type: 'hang', x: W + 20, y: 0, w: 50, h });
+  } else {                  // дрон
+    obstacles.push({ type: 'drone', x: W + 20, y: 40 + Math.random() * (H - 140), w: 46, h: 20, ph: Math.random() * 6 });
+  }
+}
+
+function update() {
+  t++;
+  if (over) return;
+  const a = 0.6, fr = 0.88;
+  if (keys.ArrowLeft) car.vx -= a;
+  if (keys.ArrowRight) car.vx += a;
+  if (keys.ArrowUp) car.vy -= a;
+  if (keys.ArrowDown) car.vy += a;
+  car.vx *= fr; car.vy *= fr;
+  car.x = Math.max(0, Math.min(W - car.w, car.x + car.vx));
+  car.y = Math.max(0, Math.min(H - 40 - car.h, car.y + car.vy));
+
+  speed += 0.0015;
+  score += speed * 0.05;
+  spawnT -= speed;
+  if (spawnT <= 0) { spawn(); spawnT = 260 + Math.random() * 160; }
+
+  for (const o of obstacles) {
+    o.x -= speed;
+    if (o.type === 'drone') o.y += Math.sin(t / 15 + o.ph) * 1.5;
+  }
+  obstacles = obstacles.filter(o => o.x + o.w > -10);
+
+  const hit = { x: car.x + 6, y: car.y + 4, w: car.w - 12, h: car.h - 6 };
+  for (const o of obstacles) {
+    if (hit.x < o.x + o.w && hit.x + hit.w > o.x && hit.y < o.y + o.h && hit.y + hit.h > o.y) {
+      over = true; best = Math.max(best, Math.floor(score));
+    }
+  }
+  skyline.off = (skyline.off + speed * skyline.k * 0.4) % W;
+  skyline2.off = (skyline2.off + speed * skyline2.k * 0.4) % W;
+}
+
+function drawLayer(l) {
+  ctx.fillStyle = l.color;
+  for (const b of l.b) {
+    const x = b.x - l.off;
+    ctx.fillRect(x, H - 40 - b.h, b.w, b.h);
+    if (x + W * 2 < W + 100) ctx.fillRect(x + W * 2, H - 40 - b.h, b.w, b.h);
+  }
+  // второй проход для бесшовности
+  for (const b of l.b) ctx.fillRect(b.x - l.off + W, H - 40 - b.h, b.w, b.h);
+}
+
+function drawCar() {
+  const { x, y, w, h } = car;
+  // свечение двигателей
+  const glow = 6 + Math.sin(t / 3) * 2;
+  ctx.fillStyle = 'rgba(80,200,255,.55)';
+  for (const px of [x + 18, x + w - 22]) {
+    ctx.beginPath(); ctx.ellipse(px, y + h + 6, 8, glow, 0, 0, 7); ctx.fill();
+  }
+  // корпус
+  ctx.fillStyle = '#e82127';
+  ctx.beginPath();
+  ctx.moveTo(x, y + h * 0.7);
+  ctx.quadraticCurveTo(x + 4, y + h * 0.45, x + w * 0.25, y + h * 0.4);
+  ctx.quadraticCurveTo(x + w * 0.4, y, x + w * 0.62, y + 2);
+  ctx.quadraticCurveTo(x + w * 0.85, y + h * 0.35, x + w - 2, y + h * 0.55);
+  ctx.lineTo(x + w, y + h * 0.8);
+  ctx.lineTo(x + 2, y + h * 0.85);
+  ctx.closePath(); ctx.fill();
+  // окна
+  ctx.fillStyle = '#bfe6ff';
+  ctx.beginPath();
+  ctx.moveTo(x + w * 0.3, y + h * 0.4);
+  ctx.quadraticCurveTo(x + w * 0.42, y + 5, x + w * 0.6, y + 5);
+  ctx.quadraticCurveTo(x + w * 0.75, y + h * 0.3, x + w * 0.8, y + h * 0.45);
+  ctx.closePath(); ctx.fill();
+  // колёса (вертикальные «турбины»)
+  ctx.fillStyle = '#222';
+  for (const px of [x + 22, x + w - 26]) { ctx.beginPath(); ctx.arc(px, y + h * 0.82, 7, 0, 7); ctx.fill(); }
+  // крылья
+  ctx.fillStyle = '#9aa4b5';
+  ctx.fillRect(x + w * 0.38, y + h * 0.5, w * 0.3, 3);
+  // логотип T
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 10px sans-serif'; ctx.fillText('T', x + w * 0.5 - 3, y + h * 0.7);
+}
+
+function drawObstacle(o) {
+  if (o.type === 'drone') {
+    ctx.fillStyle = '#ff9f1c';
+    ctx.fillRect(o.x, o.y + 6, o.w, 8);
+    ctx.fillStyle = '#ddd';
+    const s = Math.sin(t * 1.2) * 10;
+    ctx.fillRect(o.x - 4, o.y, 14 + s * 0.2, 3);
+    ctx.fillRect(o.x + o.w - 10, o.y, 14 - s * 0.2, 3);
+    ctx.fillStyle = '#f33'; ctx.fillRect(o.x + o.w / 2 - 2, o.y + 14, 4, 4);
+  } else {
+    ctx.fillStyle = '#2a3558';
+    ctx.fillRect(o.x, o.y, o.w, o.h);
+    ctx.fillStyle = '#ffd86b';
+    for (let yy = o.y + 8; yy < o.y + o.h - 8; yy += 18)
+      for (let xx = o.x + 8; xx < o.x + o.w - 8; xx += 14) ctx.fillRect(xx, yy, 6, 8);
+  }
+}
+
+function draw() {
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#05081a'); g.addColorStop(1, '#2b2f66');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#fff';
+  for (const s of stars) { ctx.globalAlpha = 0.5 + 0.5 * Math.sin(t / 30 + s.x); ctx.fillRect(s.x, s.y, s.r, s.r); }
+  ctx.globalAlpha = 1;
+  drawLayer(skyline); drawLayer(skyline2);
+  ctx.fillStyle = '#0a0d18'; ctx.fillRect(0, H - 40, W, 40);
+
+  obstacles.forEach(drawObstacle);
+  drawCar();
+
+  ctx.fillStyle = '#fff'; ctx.font = '18px sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText('Счёт: ' + Math.floor(score), 16, 28);
+  ctx.fillText('Рекорд: ' + best, 16, 52);
+  if (t < 240) { ctx.textAlign = 'center'; ctx.fillText('Управление: стрелки ← ↑ → ↓', W / 2, 30); }
+
+  if (over) {
+    ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
+    ctx.font = 'bold 44px sans-serif'; ctx.fillText('Столкновение!', W / 2, H / 2 - 10);
+    ctx.font = '20px sans-serif'; ctx.fillText('Счёт: ' + Math.floor(score) + '  ·  Пробел / Enter — играть снова', W / 2, H / 2 + 30);
+  }
+}
+
+(function loop() { update(); draw(); requestAnimationFrame(loop); })();
+</script>
+</body>
+</html>
