@@ -1,0 +1,428 @@
+<title>Deset prstů</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+/* Layout: one centred column (max 880px). Home = lesson grid; Play = stats, 3-line text window, colour-coded keyboard with finger bars. */
+:root{
+  --bg:#edf0f3; --surface:#ffffff; --fg:#14202b; --muted:#56667a; --line:#d3dce5;
+  --accent:#2c52d6; --accent-fg:#ffffff; --key:#f6f8fa; --good:#1f8a5b; --bad:#d23b4f; --bad-bg:#fbe3e6; --good-bg:#dff3ea;
+  --c1:#e0526b; --c2:#e8923a; --c3:#d3ae1f; --c4:#2fa076; --c5:#8493a3;
+  --font-ui:'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f151b; --surface:#17202a; --fg:#e6edf3; --muted:#93a3b3; --line:#2a3744;
+  --accent:#7d9dff; --accent-fg:#0f151b; --key:#1e2a36; --good:#4cc790; --bad:#ff7a8c; --bad-bg:#43202a; --good-bg:#183a2d;
+  --c1:#ff7f95; --c2:#ffad5e; --c3:#ecc94a; --c4:#4cc790; --c5:#9aa9b8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f151b; --surface:#17202a; --fg:#e6edf3; --muted:#93a3b3; --line:#2a3744;
+  --accent:#7d9dff; --accent-fg:#0f151b; --key:#1e2a36; --good:#4cc790; --bad:#ff7a8c; --bad-bg:#43202a; --good-bg:#183a2d;
+  --c1:#ff7f95; --c2:#ffad5e; --c3:#ecc94a; --c4:#4cc790; --c5:#9aa9b8; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-ui);font-size:16px;line-height:1.5;
+  padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+h1,h2,h3{font-weight:700;line-height:1.15;margin:0;text-wrap:balance}
+p{margin:0}
+button,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.25rem;letter-spacing:-.01em}
+.dots{display:flex;gap:3px;align-items:flex-end;height:22px}
+.dots i{display:block;width:6px;border-radius:3px 3px 1px 1px;background:var(--c5)}
+.dots i:nth-child(1),.dots i:nth-child(10){height:11px;background:var(--c1)}
+.dots i:nth-child(2),.dots i:nth-child(9){height:15px;background:var(--c2)}
+.dots i:nth-child(3),.dots i:nth-child(8){height:20px;background:var(--c3)}
+.dots i:nth-child(4),.dots i:nth-child(7){height:16px;background:var(--c4)}
+.dots i:nth-child(5),.dots i:nth-child(6){height:9px}
+.layout{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--muted)}
+.layout select{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px;color:var(--fg)}
+.hero{display:flex;flex-direction:column;gap:8px}
+.hero h1{font-size:clamp(1.9rem,6vw,3rem);letter-spacing:-.02em}
+.hero p{color:var(--muted);max-width:60ch}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.tab{background:none;border:0;border-bottom:3px solid transparent;padding:8px 14px;cursor:pointer;font-weight:600;color:var(--muted);margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.card{display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;cursor:pointer;min-width:0}
+.card:hover{border-color:var(--accent)}
+.card .no{font-size:.78rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.card .caps{display:flex;gap:4px;flex-wrap:wrap;min-height:30px}
+.cap{font-family:var(--font-mono);font-weight:700;min-width:28px;height:28px;padding:0 6px;display:inline-grid;place-items:center;border-radius:6px;background:var(--key);border:1px solid var(--line);border-bottom-width:3px}
+.card .lbl{font-weight:600}
+.card .meta{display:flex;justify-content:space-between;color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums}
+.stars{color:var(--c3);letter-spacing:2px}
+.stars .off{color:var(--line)}
+.rules{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.rules ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:4px;color:var(--muted)}
+.rules b{color:var(--fg)}
+.note{font-size:.85rem;color:var(--muted)}
+
+/* play */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.bar h2{font-size:1.2rem}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;min-width:0}
+.stat small{display:block;color:var(--muted);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+.stat b{font-size:1.5rem;font-variant-numeric:tabular-nums;font-weight:700}
+.prog{height:4px;background:var(--line);border-radius:2px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--accent)}
+.textbox{--lh:3rem;position:relative;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:0 18px;
+  height:calc(var(--lh)*3);overflow:hidden;font-family:var(--font-mono);font-size:1.35rem;line-height:var(--lh);white-space:pre-wrap;word-break:break-word;scroll-behavior:smooth}
+.textbox span{border-radius:4px;color:var(--muted)}
+.textbox span.ok{color:var(--good)}
+.textbox span.cur{background:var(--accent);color:var(--accent-fg)}
+.textbox span.cur.err{background:var(--bad);color:#fff;animation:shake .18s}
+.start{position:absolute;right:12px;bottom:6px;font:600 .75rem var(--font-ui);color:var(--muted);background:var(--surface);padding:2px 8px;border-radius:6px}
+@keyframes shake{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+.hint{text-align:center;color:var(--muted);min-height:1.5em}
+.hint b{color:var(--fg);font-family:var(--font-mono)}
+.fingers{display:flex;justify-content:center;gap:28px}
+.hand{display:flex;flex-direction:column;align-items:center;gap:4px}
+.hand .row{display:flex;gap:6px;align-items:flex-end;height:60px}
+.hand .f{width:22px;border-radius:11px 11px 4px 4px;background:var(--line);transition:background .12s}
+.hand .f.on{background:var(--fc)}
+.hand small{font-size:.72rem;color:var(--muted)}
+.f-P{--fc:var(--c1)}.f-R{--fc:var(--c2)}.f-M{--fc:var(--c3)}.f-I{--fc:var(--c4)}.f-T{--fc:var(--c5)}
+#kb{--u:min(2.9rem,calc((100vw - 2.5rem) / var(--w)));margin:0 auto;width:calc(var(--u)*var(--w));display:flex;flex-direction:column;gap:0}
+#kb .r{display:flex}
+#kb .sp{flex:none}
+.k{flex:none;width:var(--u);height:var(--u);padding:2px}
+.k>span{display:grid;place-items:center;height:100%;border-radius:6px;font-family:var(--font-mono);font-size:calc(var(--u)*.38);
+  background:color-mix(in oklab,var(--fc,var(--c5)) 24%,var(--key));border:1px solid color-mix(in oklab,var(--fc,var(--c5)) 40%,var(--line));position:relative;text-transform:uppercase}
+.k.sh>span,.k.spc>span{background:var(--key);border-color:var(--line);font-family:var(--font-ui);font-size:calc(var(--u)*.3);color:var(--muted);text-transform:none}
+.k.home>span::after{content:"";position:absolute;bottom:18%;width:34%;height:2px;background:var(--fg);opacity:.5;border-radius:1px}
+.k.next>span{background:var(--accent);color:var(--accent-fg);border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in oklab,var(--accent) 35%,transparent)}
+.k.next.sh>span,.k.next.spc>span{color:var(--accent-fg)}
+.k.press>span{transform:translateY(1px);filter:brightness(.9)}
+.k.bad>span{background:var(--bad);color:#fff;border-color:var(--bad)}
+
+/* result */
+.result{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px}
+.result h2{font-size:1.6rem}
+.result .big{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
+.result .big div{display:flex;flex-direction:column}
+.result .big b{font-size:2.2rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.result .big small{color:var(--muted)}
+.result .stars{font-size:1.8rem}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+@media (max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}.textbox{font-size:1.1rem;--lh:2.6rem;padding:0 12px}.fingers{gap:12px}}
+@media (prefers-reduced-motion:reduce){.textbox{scroll-behavior:auto}.textbox span.cur.err{animation:none}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>Deset prstů</div>
+    <label class="layout" for="layoutSel">Klávesnice
+      <select id="layoutSel">
+        <option value="cz">Česká (QWERTZ)</option>
+        <option value="us">Anglická (QWERTY), bez diakritiky</option>
+      </select>
+    </label>
+  </header>
+
+  <main id="home" class="wrap" style="gap:24px">
+    <section class="hero">
+      <h1>Psaní všemi deseti. Zdarma, bez registrace.</h1>
+      <p>Lekce od základní řady až po velká písmena, české texty a minutový test rychlosti. Výsledky se ukládají jen v tvém prohlížeči.</p>
+    </section>
+    <div class="tabs" role="tablist" id="tabs">
+      <button class="tab" role="tab" data-mode="lessons" aria-selected="true">Lekce</button>
+      <button class="tab" role="tab" data-mode="texts" aria-selected="false">Texty</button>
+      <button class="tab" role="tab" data-mode="test" aria-selected="false">Test 60 s</button>
+    </div>
+    <div id="grid" class="grid"></div>
+    <section class="rules">
+      <h3>Než začneš</h3>
+      <ul>
+        <li><b>Základní řada:</b> levá ruka na A S D F, pravá na J K L Ů. Ukazováky najdeš podle výstupků na F a J.</li>
+        <li><b>Každý prst má své klávesy.</b> Barvy na klávesnici ukazují, který prst je použije.</li>
+        <li><b>Na klávesnici se nedívej.</b> Piš pomalu a bez chyb, rychlost přijde sama.</li>
+        <li><b>Mezerník</b> mačkáš palcem, <b>velká písmena</b> píšeš Shiftem na opačné ruce, než je písmeno.</li>
+      </ul>
+      <p class="note">Potřebuješ fyzickou klávesnici, na telefonu to nepůjde. Při chybě se text nepohne dál, dokud nezmáčkneš správný znak.</p>
+    </section>
+  </main>
+
+  <main id="play" class="wrap" hidden>
+    <div class="bar">
+      <button class="btn" id="back">← Přehled</button>
+      <h2 id="ptitle"></h2>
+      <button class="btn" id="again">Znovu</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><small id="tLbl">Čas</small><b id="sTime">0:00</b></div>
+      <div class="stat"><small>Úhozů/min</small><b id="sCpm">0</b></div>
+      <div class="stat"><small>Přesnost</small><b id="sAcc">100 %</b></div>
+      <div class="stat"><small>Chyby</small><b id="sErr">0</b></div>
+    </div>
+    <div class="prog" aria-hidden="true"><i id="prog"></i></div>
+    <div id="stage" class="wrap" style="gap:16px">
+      <div class="textbox" id="text" aria-live="off"><span class="start" id="startHint">Čas se spustí první klávesou</span></div>
+      <p class="hint" id="hint"></p>
+      <div class="fingers" id="fingers" aria-hidden="true"></div>
+      <div id="kb" aria-hidden="true"></div>
+    </div>
+    <section id="result" class="result" hidden></section>
+  </main>
+</div>
+
+<script>
+(()=>{
+const WORDS=('dům les led pes kos sůl lak kde kdo já ty on ona ono my vy oni ano ne ale nebo že jak tak ten který která které být mít jít dát vím jsem jsi jsme jste jsou byl byla bylo bude mám máš máme mají chci může musí umí žije žena muž dítě byt kočka ryba pták strom hora řeka moře jezero louka pole cesta silnice město vesnice škola třída učitel žák kniha sešit tužka papír stůl židle okno dveře zeď podlaha kuchyně pokoj zahrada chleba máslo sýr mléko voda čaj káva polévka maso ovoce jablko hruška švestka třešeň zelenina brambory mrkev cibule cukr den noc ráno večer léto zima jaro podzim slunce měsíc hvězda vítr sníh mráz teplo studený teplý velký malý nový starý dobrý špatný krásný rychlý pomalý silný slabý mladý černý bílý červený modrý zelený žlutý šedý hnědý práce čas rok týden hodina minuta chvíle život svět země lidé přítel rodina matka otec syn dcera bratr sestra babička dědeček člověk hlava ruka noha oko ucho nos ústa srdce prst hrát psát číst počítat malovat zpívat tancovat běžet chodit mluvit slyšet vidět myslet vědět chtít moci dělat jíst pít spát bydlet pracovat studovat učit cvičit pomáhat hledat najít koupit prodat otevřít zavřít začít skončit vrátit přijít odejít zítra dnes včera hned často vždy nikdy někdy tady tam nahoře dole vpravo vlevo blízko daleko hodně málo velmi také ještě už jen proto protože když aby kolo auto vlak loď letadlo autobus tramvaj nádraží most náměstí hrad zámek kostel divadlo kino obchod pošta nemocnice hotel restaurace hra hudba píseň barva obraz sport fotbal hokej tenis plavání výlet dovolená prázdniny dárek').split(' ');
+const TEXTS=[
+ ['Ráno u babičky','Dnes ráno svítilo slunce a v zahradě zpívali ptáci. Babička uvařila silnou kávu a děti si namazaly chleba máslem. Po snídani jsme společně vyrazili na výlet k řece.'],
+ ['Praha','Praha je hlavní město České republiky. Leží na řece Vltavě a každý rok ji navštíví miliony turistů. Nejznámější je Karlův most, Pražský hrad a staré náměstí s orlojem.'],
+ ['Psaní všemi deseti','Psaní všemi deseti vyžaduje trpělivost a pravidelný trénink. Prsty držíme na základní řadě a každý z nich má svou klávesu. Nedíváme se na klávesnici, ale sledujeme text na obrazovce.'],
+ ['V lese','V lese voní jehličí a mech. Mezi stromy se ozývá datel a v potoce plave malá ryba. Když přijde večer, slunce zapadne za kopec a v údolí zůstane jen klid.'],
+ ['Výlet na kole','Karel koupil nové kolo a vyjel na dlouhou cestu kolem rybníka. Vítr mu foukal do tváře, ale on se smál. Večer se vrátil domů unavený a šťastný.'],
+ ['Dobrá kniha','Dobrá kniha je jako dobrý přítel. Vždy ji můžete otevřít, když máte chvíli času, a ona vám vypráví příběh o dalekých zemích, odvážných lidech a velkých dobrodružstvích.'],
+ ['První sníh','Zima přinesla první sníh. Děti postavily sněhuláka, udělaly koulovačku a pak se zahřály u kamen s horkým čajem. Venku zněl smích a z komína stoupal dým.']
+];
+const LESSONS=[
+ {k:'fj',t:'Základní řada, ukazováky'},{k:'dk',t:'Prostředníky'},{k:'sl',t:'Prsteníky'},{k:'aů',t:'Malíčky'},{k:'gh',t:'Ukazováky do středu'},
+ {k:'ei',t:'Horní řada'},{k:'ru',t:'Horní řada'},{k:'tz',t:'Horní řada'},{k:'wo',t:'Horní řada'},{k:'qp',t:'Horní řada'},
+ {k:'vn',t:'Spodní řada'},{k:'cm',t:'Spodní řada'},{k:'by',t:'Spodní řada'},{k:'x,.',t:'Čárka a tečka'},
+ {k:'ěš',t:'Diakritika'},{k:'čř',t:'Diakritika'},{k:'žý',t:'Diakritika'},{k:'áí',t:'Diakritika'},{k:'éú',t:'Diakritika'},
+ {k:'',t:'Velká písmena (Shift)',caps:1}
+];
+const FN={P:'malíček',R:'prsteník',M:'prostředník',I:'ukazovák',T:'palec'};
+const L5=['LP','LR','LM','LI','LI','RI','RI','RM','RR','RP'];
+const LAYOUTS={
+ cz:{W:14,rows:[
+  {off:0,keys:';+ěščřžýáíé=',f:['LP','LP','LR','LM','LI','LI','RI','RI','RM','RR','RP','RP']},
+  {off:1.5,keys:'qwertzuiopú',f:[...L5,'RP']},
+  {off:1.75,keys:'asdfghjklů',f:L5},
+  {off:2.25,keys:'yxcvbnm,.-',f:L5,shift:1}]},
+ us:{W:12,rows:[
+  {off:.5,keys:'qwertyuiop',f:L5},
+  {off:.75,keys:'asdfghjkl',f:L5.slice(0,9)},
+  {off:1.25,keys:'zxcvbnm,.',f:L5.slice(0,9),shift:1}]}
+};
+const LS='desetprstu.v1';
+let store={layout:'cz',best:{}};
+try{const r=localStorage.getItem(LS);if(r)store=Object.assign(store,JSON.parse(r))}catch(e){}
+if(!LAYOUTS[store.layout])store.layout='cz';
+const save=()=>{try{localStorage.setItem(LS,JSON.stringify(store))}catch(e){}};
+const $=s=>document.querySelector(s);
+const strip=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'');
+const norm=s=>store.layout==='us'?strip(s):s;
+const rnd=n=>Math.floor(Math.random()*n);
+const pick=a=>a[rnd(a.length)];
+let mode='lessons',S=null,keyEls={},fingerEls={};
+
+/* ---------- content ---------- */
+function mapUS(k){return [...k].filter(c=>/[a-z,.]/.test(c)).map(c=>c==='z'?'y':c==='y'?'z':c).join('')}
+function lessons(){
+  const us=store.layout==='us';
+  const all=LESSONS.map((l,i)=>({...l,id:'l'+i,keys:us?mapUS(l.k):l.k}));
+  return us?all.filter(l=>l.keys||l.caps):all;
+}
+function genLesson(list,j){
+  const L=list[j],letters=new Set();let comma=false,dot=false;
+  const add=l=>[...l.keys].forEach(c=>c===','?comma=true:c==='.'?dot=true:letters.add(c));
+  list.slice(0,j+1).forEach(add);
+  if(L.caps)list.forEach(add);
+  const fresh=L.caps?[]:[...L.keys].filter(c=>letters.has(c));
+  const arr=[...letters];
+  const pool=WORDS.map(norm).filter(w=>[...w].every(c=>letters.has(c)));
+  const poolNew=pool.filter(w=>[...w].some(c=>fresh.includes(c)));
+  const out=[];let len=0,cap=false;
+  while(len<115){
+    let w;
+    if(pool.length>=6&&Math.random()<.65)w=(poolNew.length&&Math.random()<.6)?pick(poolNew):pick(pool);
+    else{
+      w='';const n=2+rnd(4);
+      for(let i=0;i<n;i++)w+=pick(arr);
+      if(fresh.length&&Math.random()<.85){const p=rnd(n);w=w.slice(0,p)+pick(fresh)+w.slice(p+1)}
+    }
+    if(L.caps&&(cap||Math.random()<.4))w=w[0].toUpperCase()+w.slice(1);
+    cap=false;
+    if(dot&&Math.random()<.1){w+='.';if(L.caps)cap=true}
+    else if(comma&&Math.random()<.12)w+=',';
+    out.push(w);len+=w.length+1;
+  }
+  return out.join(' ').trim();
+}
+function genTest(){
+  const pool=WORDS.map(norm);let prev='',out=[];
+  while(out.length<450){const w=pick(pool);if(w!==prev){out.push(w);prev=w}}
+  return out.join(' ');
+}
+
+/* ---------- home ---------- */
+function stars(n,cls=''){return `<span class="stars ${cls}" aria-label="${n} z 3 hvězd">${'★'.repeat(n)}<span class="off">${'★'.repeat(3-n)}</span></span>`}
+function renderHome(){
+  document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.mode===mode));
+  const g=$('#grid');let h='';
+  if(mode==='lessons'){
+    lessons().forEach((l,j)=>{
+      const b=store.best[store.layout+':'+l.id];
+      const caps=l.caps?'<span class="cap">Shift</span><span class="cap">Aa</span>':[...l.keys].map(c=>`<span class="cap">${c.toUpperCase()}</span>`).join('');
+      h+=`<button class="card" data-i="${j}"><span class="no">Lekce ${j+1}</span><span class="caps">${caps}</span><span class="lbl">${l.t}</span><span class="meta">${stars(b?b.stars:0)}<span>${b?b.cpm+' úhozů/min':''}</span></span></button>`;
+    });
+  }else if(mode==='texts'){
+    TEXTS.forEach((t,j)=>{
+      const b=store.best[store.layout+':t'+j];
+      h+=`<button class="card" data-i="${j}"><span class="no">Text ${j+1} · ${t[1].length} znaků</span><span class="lbl">${t[0]}</span><span class="meta">${stars(b?b.stars:0)}<span>${b?b.cpm+' úhozů/min':''}</span></span></button>`;
+    });
+  }else{
+    const b=store.best[store.layout+':test'];
+    h=`<button class="card" data-i="0"><span class="no">60 sekund</span><span class="lbl">Co nejvíc slov za minutu</span><span class="meta"><span>Náhodná česká slova</span><span>${b?'Rekord '+b.cpm+' úhozů/min':''}</span></span></button>`;
+  }
+  g.innerHTML=h;
+}
+
+/* ---------- keyboard ---------- */
+function buildKeyboard(){
+  const L=LAYOUTS[store.layout],kb=$('#kb');
+  kb.style.setProperty('--w',L.W);kb.innerHTML='';keyEls={};
+  const mk=(cls,label,w)=>{const d=document.createElement('div');d.className='k '+cls;if(w)d.style.width=`calc(var(--u)*${w})`;d.innerHTML=`<span>${label}</span>`;return d};
+  const sp=w=>{const d=document.createElement('div');d.className='sp';d.style.width=`calc(var(--u)*${w})`;return d};
+  L.rows.forEach(r=>{
+    const row=document.createElement('div');row.className='r';
+    if(r.shift){const s=mk('sh','⇧',r.off);s.dataset.sh='R';row.appendChild(s);keyEls['\u0001L']=s}
+    else row.appendChild(sp(r.off));
+    [...r.keys].forEach((c,i)=>{
+      const f=r.f[i],e=mk('f-'+f[1],c);e.dataset.f=f;
+      if(c==='f'||c==='j')e.classList.add('home');
+      row.appendChild(e);keyEls[c]=e;
+    });
+    if(r.shift){const s=mk('sh','⇧',L.W-r.off-r.keys.length);row.appendChild(s);keyEls['\u0001R']=s}
+    kb.appendChild(row);
+  });
+  const row=document.createElement('div');row.className='r';
+  row.appendChild(sp(L.W/2-3));
+  const spc=mk('spc f-T','mezerník',6);row.appendChild(spc);keyEls[' ']=spc;
+  kb.appendChild(row);
+  // finger bars
+  const H=[['Levá ruka',['LP','LR','LM','LI','LT']],['Pravá ruka',['RT','RI','RM','RR','RP']]];
+  const hts={P:34,R:46,M:56,I:48,T:28};
+  fingerEls={};
+  $('#fingers').innerHTML=H.map(([n,fs])=>`<div class="hand"><div class="row">${fs.map(f=>`<div class="f f-${f[1]}" data-f="${f}" style="height:${hts[f[1]]}px"></div>`).join('')}</div><small>${n}</small></div>`).join('');
+  document.querySelectorAll('#fingers .f').forEach(e=>fingerEls[e.dataset.f]=e);
+}
+function fingerOf(ch){
+  if(ch===' ')return ['LT','RT'];
+  const lo=ch.toLowerCase(),e=keyEls[lo];if(!e)return [];
+  const f=e.dataset.f,fs=[f];
+  if(ch!==lo)fs.push(f[0]==='L'?'RP':'LP');
+  return fs;
+}
+
+/* ---------- session ---------- */
+function start(cfg){
+  S={...cfg,chars:[...cfg.text],pos:0,t0:0,errors:0,correct:0,err:{},done:false,timer:0};
+  if(document.activeElement)document.activeElement.blur();
+  $('#home').hidden=true;$('#play').hidden=false;$('#result').hidden=true;$('#stage').hidden=false;
+  $('#ptitle').textContent=cfg.title;
+  $('#tLbl').textContent=cfg.limit?'Zbývá':'Čas';
+  buildKeyboard();
+  const box=$('#text');box.scrollTop=0;
+  box.innerHTML='<span class="start" id="startHint">Čas se spustí první klávesou</span>';
+  S.els=S.chars.map(c=>{const s=document.createElement('span');s.textContent=c;box.appendChild(s);return s});
+  setCur();updateStats();
+}
+function setCur(){
+  const box=$('#text');
+  box.querySelectorAll('.cur').forEach(e=>e.classList.remove('cur','err'));
+  document.querySelectorAll('.k.next').forEach(e=>e.classList.remove('next'));
+  document.querySelectorAll('#fingers .on').forEach(e=>e.classList.remove('on'));
+  const ch=S.chars[S.pos];if(ch===undefined)return;
+  const el=S.els[S.pos];el.classList.add('cur');
+  box.scrollTop=Math.max(0,el.offsetTop-parseFloat(getComputedStyle(box).lineHeight));
+  const lo=ch.toLowerCase(),k=keyEls[lo];if(k)k.classList.add('next');
+  const shifted=ch!==lo;
+  if(shifted){const f=k&&k.dataset.f;const s=keyEls[f&&f[0]==='L'?'\u0001R':'\u0001L'];if(s)s.classList.add('next')}
+  const fs=fingerOf(ch);fs.forEach(f=>fingerEls[f]&&fingerEls[f].classList.add('on'));
+  const f=fs[0];
+  const name=ch===' '?'mezerník, palec':(f?(f[0]==='L'?'levý ':'pravý ')+FN[f[1]]:'');
+  $('#hint').innerHTML=`Další: <b>${ch===' '?'mezerník':ch}</b>${shifted?' se Shiftem':''}${name&&ch!==' '?' · '+name:name?' · palec':''}`;
+}
+function fmt(s){s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+function updateStats(){
+  const el=S.t0?(performance.now()-S.t0)/1000:0;
+  const cpm=el>=1?Math.round(S.correct/(el/60)):0;
+  const tot=S.correct+S.errors,acc=tot?Math.round(S.correct/tot*100):100;
+  $('#sTime').textContent=S.limit?fmt(S.limit-el):fmt(el);
+  $('#sCpm').textContent=cpm;$('#sAcc').textContent=acc+' %';$('#sErr').textContent=S.errors;
+  $('#prog').style.width=(S.limit?Math.min(100,el/S.limit*100):S.pos/S.chars.length*100)+'%';
+  return {el,cpm,acc};
+}
+function press(ch){
+  if(!S||S.done)return;
+  if(!S.t0){S.t0=performance.now();S.timer=setInterval(tick,200);const h=$('#startHint');if(h)h.remove()}
+  const want=S.chars[S.pos];
+  const ke=keyEls[ch.toLowerCase()];
+  if(ke){ke.classList.add('press');setTimeout(()=>ke.classList.remove('press'),90)}
+  if(ch===want){
+    S.els[S.pos].classList.remove('cur','err');S.els[S.pos].classList.add('ok');
+    S.pos++;S.correct++;
+    if(S.pos>=S.chars.length){finish();return}
+    setCur();
+  }else{
+    S.errors++;S.err[want]=(S.err[want]||0)+1;
+    const c=S.els[S.pos];c.classList.remove('err');void c.offsetWidth;c.classList.add('err');
+    if(ke){ke.classList.add('bad');setTimeout(()=>ke.classList.remove('bad'),180)}
+  }
+  updateStats();
+}
+function tick(){if(!S||S.done)return;const r=updateStats();if(S.limit&&r.el>=S.limit)finish()}
+function finish(){
+  S.done=true;clearInterval(S.timer);
+  let {el,cpm,acc}=updateStats();
+  if(S.limit)el=Math.min(el,S.limit);
+  cpm=el>0?Math.round(S.correct/(el/60)):0;
+  const key=store.layout+':'+S.id;
+  const st=S.kind==='test'?0:(acc>=98&&cpm>=150?3:acc>=95&&cpm>=100?2:acc>=90?1:0);
+  const prev=store.best[key];
+  const better=!prev||(S.kind==='test'?cpm>prev.cpm:(st>prev.stars||(st===prev.stars&&cpm>prev.cpm)));
+  if(better&&(S.kind==='test'||st>0)){store.best[key]={stars:st,cpm,acc};save()}
+  const worst=Object.entries(S.err).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([c,n])=>`<span class="cap">${c===' '?'mezerník':c.toUpperCase()}</span> ${n}×`).join(' &nbsp; ');
+  let msg;
+  if(S.kind==='test')msg=prev&&cpm<=prev.cpm?`Tvůj rekord je ${prev.cpm} úhozů/min.`:'Nový rekord!';
+  else msg=st===3?'Výborně, to je mistrovský výkon.':st===2?'Velmi dobře. Pro třetí hvězdu zrychli a drž přesnost nad 98 %.':st===1?'Splněno. Pro další hvězdu zvyš přesnost na 95 % a rychlost na 100 úhozů/min.':'Zkus to znovu pomaleji. Potřebuješ přesnost aspoň 90 %.';
+  const list=lessons(),idx=list.findIndex(l=>l.id===S.id),nextL=S.kind==='lesson'&&st>0&&list[idx+1];
+  $('#stage').hidden=true;
+  const r=$('#result');r.hidden=false;
+  r.innerHTML=`<h2>${S.kind==='test'?'Čas vypršel':'Hotovo'}</h2>
+  ${S.kind==='test'?'':stars(st)}
+  <div class="big"><div><b>${cpm}</b><small>úhozů za minutu</small></div><div><b>${acc} %</b><small>přesnost</small></div><div><b>${S.errors}</b><small>chyb</small></div><div><b>${fmt(el)}</b><small>čas</small></div></div>
+  <p>${msg}</p>${worst?`<p class="note">Nejvíc chyb: ${worst}</p>`:''}
+  <div class="actions"><button class="btn primary" id="rAgain">Znovu</button>${nextL?'<button class="btn" id="rNext">Další lekce</button>':''}<button class="btn" id="rBack">Přehled</button></div>`;
+  $('#rAgain').onclick=restart;$('#rBack').onclick=home;
+  if(nextL)$('#rNext').onclick=()=>startLesson(idx+1);
+}
+
+/* ---------- navigation ---------- */
+function startLesson(j){const list=lessons();start({kind:'lesson',id:list[j].id,mode:'lessons',idx:j,title:`Lekce ${j+1}: ${list[j].t}`,text:genLesson(list,j)})}
+function startText(j){start({kind:'text',id:'t'+j,mode:'texts',idx:j,title:TEXTS[j][0],text:norm(TEXTS[j][1])})}
+function startTest(){start({kind:'test',id:'test',mode:'test',idx:0,title:'Test 60 s',text:genTest(),limit:60})}
+function restart(){if(!S)return;clearInterval(S.timer);const m=S.kind;if(m==='lesson')startLesson(S.idx);else if(m==='text')startText(S.idx);else startTest()}
+function home(){if(S)clearInterval(S.timer);S=null;$('#play').hidden=true;$('#home').hidden=false;renderHome()}
+
+$('#grid').addEventListener('click',e=>{
+  const b=e.target.closest('.card');if(!b)return;const i=+b.dataset.i;
+  if(mode==='lessons')startLesson(i);else if(mode==='texts')startText(i);else startTest();
+});
+$('#tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(!t)return;mode=t.dataset.mode;renderHome()});
+$('#back').onclick=home;$('#again').onclick=restart;
+$('#layoutSel').value=store.layout;
+$('#layoutSel').addEventListener('change',e=>{store.layout=e.target.value;save();e.target.blur();home()});
+window.addEventListener('keydown',e=>{
+  if($('#play').hidden)return;
+  if(e.key==='Escape'){home();return}
+  if(S&&S.done){if(e.key==='Enter'&&document.activeElement===document.body)restart();return}
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.key.length===1){e.preventDefault();press(e.key)}
+});
+renderHome();
+})();
+</script>
