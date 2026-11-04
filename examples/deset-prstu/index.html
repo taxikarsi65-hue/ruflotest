@@ -69,7 +69,8 @@ button,select{font:inherit;color:inherit}
 /* play */
 .bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .bar h2{font-size:1.2rem}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+#board{width:100%;min-width:0}
 .stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;min-width:0}
 .stat small{display:block;color:var(--muted);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
 .stat b{font-size:1.5rem;font-variant-numeric:tabular-nums;font-weight:700}
@@ -105,6 +106,24 @@ button,select{font:inherit;color:inherit}
 .k.press>span{transform:translateY(1px);filter:brightness(.9)}
 .k.bad>span{background:var(--bad);color:#fff;border-color:var(--bad)}
 
+/* leaderboard */
+.lbform{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px}
+.lbform label{display:flex;flex-direction:column;gap:4px;font-size:.8rem;color:var(--muted);flex:1 1 160px;min-width:0}
+.lbform input{font:inherit;font-size:1rem;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 14px;cursor:pointer;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.tw{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.tw table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.tw th{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:right;padding:10px 12px;font-weight:600;white-space:nowrap}
+.tw td{padding:9px 12px;text-align:right;border-top:1px solid var(--line);white-space:nowrap}
+.tw th:nth-child(2),.tw td:nth-child(2){text-align:left;width:100%;max-width:0;overflow:hidden;text-overflow:ellipsis}
+.tw th:first-child,.tw td:first-child{text-align:left;color:var(--muted)}
+.tw tr.me td{background:color-mix(in oklab,var(--accent) 12%,var(--surface));font-weight:700}
+.tw td.empty{text-align:left;color:var(--muted);white-space:normal;max-width:none}
+.tw .del{background:none;border:0;color:var(--muted);cursor:pointer;padding:0 4px;font:inherit}
+.tw .del.arm{color:var(--bad);font-weight:700}
+
 /* tutorial */
 .banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:color-mix(in oklab,var(--accent) 9%,var(--surface));border:1px solid color-mix(in oklab,var(--accent) 35%,var(--line));border-radius:10px;padding:14px 16px}
 .banner div{display:flex;flex-direction:column;min-width:0}
@@ -128,7 +147,7 @@ button,select{font:inherit;color:inherit}
 .result .big small{color:var(--muted)}
 .result .stars{font-size:1.8rem}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
-@media (max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}.textbox{font-size:1.1rem;--lh:2.6rem;padding:0 12px}.fingers{gap:12px}}
+@media (max-width:520px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.textbox{font-size:1.1rem;--lh:2.6rem;padding:0 12px}.fingers{gap:12px}}
 @media (prefers-reduced-motion:reduce){.textbox{scroll-behavior:auto}.textbox span.cur.err{animation:none}}
 </style>
 
@@ -153,8 +172,10 @@ button,select{font:inherit;color:inherit}
       <button class="tab" role="tab" data-mode="lessons" aria-selected="true">Lekce</button>
       <button class="tab" role="tab" data-mode="texts" aria-selected="false">Texty</button>
       <button class="tab" role="tab" data-mode="test" aria-selected="false">Test 60 s</button>
+      <button class="tab" role="tab" data-mode="board" aria-selected="false">Žebříček</button>
     </div>
     <div id="grid" class="grid"></div>
+    <div id="board" class="wrap" hidden style="gap:16px"></div>
     <section class="rules">
       <h3>Než začneš</h3>
       <ul>
@@ -229,6 +250,7 @@ const LS='desetprstu.v1';
 let store={layout:'cz',best:{}};
 try{const r=localStorage.getItem(LS);if(r)store=Object.assign(store,JSON.parse(r))}catch(e){}
 if(!LAYOUTS[store.layout])store.layout='cz';
+if(!store.profile||typeof store.profile!=='object')store.profile={nick:'',cls:''};
 const save=()=>{try{localStorage.setItem(LS,JSON.stringify(store))}catch(e){}};
 const $=s=>document.querySelector(s);
 const strip=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'');
@@ -286,6 +308,9 @@ function renderBanner(){
 function renderHome(){
   renderBanner();
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t.dataset.mode===mode));
+  $('#grid').hidden=mode==='board';$('#board').hidden=mode!=='board';
+  if(mode==='board'){renderBoardShell();startBoard();return}
+  stopBoard();
   const g=$('#grid');let h='';
   if(mode==='lessons'){
     lessons().forEach((l,j)=>{
@@ -410,7 +435,7 @@ function finish(){
   const st=S.kind==='test'?0:(acc>=98&&cpm>=150?3:acc>=95&&cpm>=100?2:acc>=90?1:0);
   const prev=store.best[key];
   const better=!prev||(S.kind==='test'?cpm>prev.cpm:(st>prev.stars||(st===prev.stars&&cpm>prev.cpm)));
-  if(better&&(S.kind==='test'||st>0)){store.best[key]={stars:st,cpm,acc};save()}
+  if(better&&(S.kind==='test'||st>0)){store.best[key]={stars:st,cpm,acc};save();publishScore()}
   const worst=Object.entries(S.err).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([c,n])=>`<span class="cap">${c===' '?'mezerník':c.toUpperCase()}</span> ${n}×`).join(' &nbsp; ');
   let msg;
   if(S.kind==='test')msg=prev&&cpm<=prev.cpm?`Tvůj rekord je ${prev.cpm} úhozů/min.`:'Nový rekord!';
@@ -493,6 +518,135 @@ $('#tutPanel').addEventListener('click',e=>{
 });
 $('#tutBanner').addEventListener('click',e=>{if(e.target.closest('#tutGo'))showTut(0)});
 
+/* ---------- score and class leaderboard ---------- */
+const lb={db:null,uid:null,canWrite:null,admin:false,rows:[],unsub:null,timer:0,subCls:'',loaded:false,err:'',sort:'testCpm',last:'',chain:Promise.resolve()};
+const normCls=s=>strip(String(s)).toUpperCase().replace(/[^A-Z0-9-]/g,'').slice(0,16);
+const normNick=s=>String(s).replace(/\s+/g,' ').trim().slice(0,20);
+function myStats(){
+  const les={};let bestCpm=0,testCpm=0;
+  for(const [k,v] of Object.entries(store.best)){
+    const id=k.split(':')[1]||'';
+    if(id==='test')testCpm=Math.max(testCpm,v.cpm);
+    else if(/^l\d+$/.test(id))les[id]=Math.max(les[id]||0,v.stars);
+    if(v.acc>=90)bestCpm=Math.max(bestCpm,v.cpm);
+  }
+  const vals=Object.values(les);
+  return {lessons:vals.filter(x=>x>0).length,stars:vals.reduce((a,b)=>a+b,0),bestCpm,testCpm};
+}
+async function initShared(){
+  try{
+    const c=window.claude;if(!c||!c.use)return;
+    const [db,user]=await Promise.all([c.use('db'),c.use('user')]);
+    if(!db||!user)return;
+    lb.uid=await user.id();
+    if(!lb.uid)return;
+    lb.canWrite=await user.can('data.write');
+    lb.admin=await user.canEdit();
+    lb.db=db;
+    if(mode==='board'&&!$('#home').hidden)renderHome();
+    publishScore();
+  }catch(e){}
+}
+function publishScore(force){
+  const p=store.profile;
+  if(!lb.db||!lb.uid||lb.canWrite===false||!p.nick||!p.cls)return;
+  const s=myStats();
+  const body={nick:p.nick,cls:p.cls,lessons:s.lessons,stars:s.stars,bestCpm:s.bestCpm,testCpm:s.testCpm};
+  const sig=JSON.stringify(body);
+  if(!force&&sig===lb.last)return;
+  lb.chain=lb.chain
+    .then(()=>lb.db.doc('scores/'+lb.uid).set({...body,updated:Date.now()}))
+    .then(()=>{lb.last=sig;lb.err=''},e=>{lb.err=e&&e.code==='invalid_argument'?'Zápis výsledků nebyl povolen. Požádej učitele o roli Přispěvatel.':'Výsledky se nepodařilo odeslat. Zkus to za chvíli.'})
+    .then(renderStatus);
+}
+function statusText(){
+  if(!lb.db)return 'Sdílený žebříček teď není k dispozici, protože nejsi přihlášený v Claude. Tvoje skóre výše se počítá i tak.';
+  if(lb.canWrite===false)return 'Máš jen právo číst. Žebříček vidíš, ale tvoje výsledky se do něj nezapíšou, dokud ti učitel nedá roli Přispěvatel.';
+  if(lb.err)return lb.err;
+  const p=store.profile;
+  if(!p.nick||!p.cls)return 'Zadej přezdívku a kód třídy, ať se objevíš v žebříčku.';
+  return '';
+}
+function renderStatus(){const e=$('#lbStatus');if(e)e.textContent=statusText()}
+function renderBoardShell(){
+  const b=$('#board'),s=myStats(),p=store.profile;
+  b.innerHTML=`<div class="stats">
+    <div class="stat"><small>Splněné lekce</small><b>${s.lessons} / ${LESSONS.length}</b></div>
+    <div class="stat"><small>Hvězdy</small><b>${s.stars}</b></div>
+    <div class="stat"><small>Nejlepší tempo</small><b>${s.bestCpm}</b></div>
+    <div class="stat"><small>Test 60 s</small><b>${s.testCpm}</b></div></div>
+    <form id="lbForm" class="lbform">
+      <label>Přezdívka<input id="lbNick" maxlength="20" autocomplete="off" placeholder="např. Rychlá liška"></label>
+      <label>Kód třídy<input id="lbCls" maxlength="16" autocomplete="off" placeholder="např. 7A-2026"></label>
+      <button class="btn primary" type="submit">Uložit a připojit</button>
+    </form>
+    <p class="note" id="lbStatus"></p>
+    <div class="seg" id="lbSort" role="group" aria-label="Řadit podle">
+      <button type="button" data-s="testCpm">Test 60 s</button><button type="button" data-s="stars">Hvězdy</button><button type="button" data-s="bestCpm">Nejlepší tempo</button>
+    </div>
+    <div class="tw"><table id="lbTable"></table></div>
+    <p class="note">Používej přezdívku, ne celé jméno. Kód třídy domluvte ve třídě, například 7A-2026. Žebříček ukazuje jen ty, kdo zadali stejný kód. Výsledky odesílá tvůj prohlížeč, takže jim nejde slepě věřit jako zkoušce.</p>`;
+  $('#lbNick').value=p.nick;$('#lbCls').value=p.cls;
+  $('#lbForm').addEventListener('submit',e=>{
+    e.preventDefault();
+    const nick=normNick($('#lbNick').value),cls=normCls($('#lbCls').value);
+    $('#lbNick').value=nick;$('#lbCls').value=cls;
+    store.profile={nick,cls};save();
+    stopBoard();startBoard();publishScore(true);renderStatus();
+  });
+  $('#lbSort').addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;lb.sort=t.dataset.s;renderTable()});
+  renderStatus();renderTable();
+}
+function startBoard(){
+  const cls=store.profile.cls;
+  if(!lb.db||!cls||lb.subCls===cls)return;
+  stopBoard();lb.subCls=cls;lb.loaded=false;
+  lb.timer=setTimeout(()=>{if(!lb.loaded){lb.err='Žebříček se zatím nepodařilo načíst. Zkontroluj připojení.';renderStatus()}},10000);
+  lb.unsub=lb.db.collection('scores').where('cls','==',cls).limit(300).onSnapshot(snap=>{
+    if(!snap.metadata.fromCache){lb.loaded=true;clearTimeout(lb.timer);if(lb.err.startsWith('Žebříček se'))lb.err=''}
+    lb.rows=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderTable();renderStatus();
+  },e=>{lb.err=e&&e.code==='revoked'?'Přístup k žebříčku už nemáš.':'Žebříček se nepodařilo načíst.';renderStatus()});
+}
+function stopBoard(){
+  if(lb.unsub){lb.unsub();lb.unsub=null}
+  clearTimeout(lb.timer);lb.subCls='';lb.rows=[];
+}
+function renderTable(){
+  const t=$('#lbTable');if(!t)return;
+  document.querySelectorAll('#lbSort button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===lb.sort));
+  t.replaceChildren();
+  const mk=(tag,txt,cls)=>{const e=document.createElement(tag);e.textContent=txt;if(cls)e.className=cls;return e};
+  const hr=document.createElement('tr');
+  ['#','Přezdívka','Test 60 s','Hvězdy','Tempo','Lekce',''].forEach(h=>hr.appendChild(mk('th',h)));
+  const th=document.createElement('thead');th.appendChild(hr);t.appendChild(th);
+  const tb=document.createElement('tbody');t.appendChild(tb);
+  const empty=m=>{const r=document.createElement('tr'),c=mk('td',m,'empty');c.colSpan=7;r.appendChild(c);tb.appendChild(r)};
+  if(!lb.db)return empty('Žebříček se zobrazí po přihlášení.');
+  if(!store.profile.cls)return empty('Zadej kód třídy, ať uvidíš spolužáky.');
+  if(!lb.loaded&&!lb.rows.length)return empty('Načítám…');
+  const k=lb.sort,tie=['testCpm','stars','bestCpm','lessons'];
+  const num=v=>typeof v==='number'&&isFinite(v)?v:0;
+  const rows=[...lb.rows].sort((a,b)=>{for(const f of [k,...tie]){const d=num(b[f])-num(a[f]);if(d)return d}return String(a.nick).localeCompare(String(b.nick),'cs')}).slice(0,50);
+  if(!rows.length)return empty('Zatím tu nikdo není. Dokonči lekci nebo test a ukážeš se jako první.');
+  rows.forEach((r,i)=>{
+    const tr=document.createElement('tr');if(r.id===lb.uid)tr.className='me';
+    tr.appendChild(mk('td',String(i+1)));
+    tr.appendChild(mk('td',String(r.nick||'Bez jména')+(r.id===lb.uid?' (ty)':'')));
+    [r.testCpm,r.stars,r.bestCpm,r.lessons].forEach(v=>tr.appendChild(mk('td',String(num(v)))));
+    const d=document.createElement('td');
+    if(lb.admin){
+      const b=mk('button','×','del');b.type='button';b.setAttribute('aria-label','Smazat '+String(r.nick||''));
+      b.addEventListener('click',()=>{
+        if(!b.classList.contains('arm')){b.classList.add('arm');b.textContent='Smazat?';return}
+        lb.db.doc('scores/'+r.id).delete().catch(()=>{lb.err='Smazání se nepovedlo.';renderStatus()});
+      });
+      d.appendChild(b);
+    }
+    tr.appendChild(d);tb.appendChild(tr);
+  });
+}
+
 $('#grid').addEventListener('click',e=>{
   const b=e.target.closest('.card');if(!b)return;const i=+b.dataset.i;
   if(mode==='lessons')startLesson(i);else if(mode==='texts')startText(i);else startTest();
@@ -515,5 +669,6 @@ window.addEventListener('keydown',e=>{
   if(e.key.length===1){e.preventDefault();press(e.key)}
 });
 renderHome();
+initShared();
 })();
 </script>
