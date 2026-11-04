@@ -157,6 +157,7 @@ button,select{font:inherit;color:inherit}
     <label class="layout" for="layoutSel">Klávesnice
       <select id="layoutSel">
         <option value="cz">Česká (QWERTZ)</option>
+        <option value="czq">Česká (QWERTY)</option>
         <option value="us">Anglická (QWERTY), bez diakritiky</option>
       </select>
     </label>
@@ -246,6 +247,7 @@ const LAYOUTS={
   {off:.75,keys:'asdfghjkl',f:L5.slice(0,9)},
   {off:1.25,keys:'zxcvbnm,.',f:L5.slice(0,9),shift:1}]}
 };
+LAYOUTS.czq={W:14,rows:LAYOUTS.cz.rows.map(r=>({...r,keys:r.keys.replace(/[zy]/g,c=>c==='z'?'y':'z')}))};
 const LS='desetprstu.v1';
 let store={layout:'cz',best:{}};
 try{const r=localStorage.getItem(LS);if(r)store=Object.assign(store,JSON.parse(r))}catch(e){}
@@ -263,7 +265,7 @@ let mode='lessons',S=null,keyEls={},fingerEls={};
 function mapUS(k){return [...k].filter(c=>/[a-z,.]/.test(c)).map(c=>c==='z'?'y':c==='y'?'z':c).join('')}
 function lessons(){
   const us=store.layout==='us';
-  const all=LESSONS.map((l,i)=>({...l,id:'l'+i,keys:us?mapUS(l.k):l.k}));
+  const all=LESSONS.map((l,i)=>({...l,id:'l'+i,keys:us?mapUS(l.k):store.layout==='czq'?l.k.replace(/[zy]/g,c=>c==='z'?'y':'z'):l.k}));
   return us?all.filter(l=>l.keys||l.caps):all;
 }
 function genLesson(list,j){
@@ -560,12 +562,12 @@ function publishScore(force){
     .then(renderStatus);
 }
 function statusText(){
-  if(!lb.db)return 'Sdílený žebříček teď není k dispozici, protože nejsi přihlášený v Claude. Tvoje skóre výše se počítá i tak.';
+  if(!lb.db)return 'Sdílený žebříček nejde použít, protože nejsi přihlášený v Claude. Přihlas se a otevři odkaz znovu. Tvoje skóre výše se počítá i tak.';
   if(lb.canWrite===false)return 'Máš jen právo číst. Žebříček vidíš, ale tvoje výsledky se do něj nezapíšou, dokud ti učitel nedá roli Přispěvatel.';
   if(lb.err)return lb.err;
   const p=store.profile;
   if(!p.nick||!p.cls)return 'Zadej přezdívku a kód třídy, ať se objevíš v žebříčku.';
-  return '';
+  return `Ve třídě ${p.cls} jsi jako „${p.nick}“.`;
 }
 function renderStatus(){const e=$('#lbStatus');if(e)e.textContent=statusText()}
 function renderBoardShell(){
@@ -585,7 +587,8 @@ function renderBoardShell(){
       <button type="button" data-s="testCpm">Test 60 s</button><button type="button" data-s="stars">Hvězdy</button><button type="button" data-s="bestCpm">Nejlepší tempo</button>
     </div>
     <div class="tw"><table id="lbTable"></table></div>
-    <p class="note">Používej přezdívku, ne celé jméno. Kód třídy domluvte ve třídě, například 7A-2026. Žebříček ukazuje jen ty, kdo zadali stejný kód. Výsledky odesílá tvůj prohlížeč, takže jim nejde slepě věřit jako zkoušce.</p>`;
+    <p class="note">Používej přezdívku, ne celé jméno. Kód třídy domluvte ve třídě, například 7A-2026. Žebříček ukazuje jen ty, kdo zadali stejný kód. Výsledky odesílá tvůj prohlížeč, takže jim nejde slepě věřit jako zkoušce.</p>
+    <p class="note"><b>Pro učitele:</b> aby se žáci mohli zapsat, musí být přihlášení a ve Sdílení pozvaní e-mailem jako Přispěvatelé. Z veřejného odkazu žebříček jen vidí, nebo ho nevidí vůbec.</p>`;
   $('#lbNick').value=p.nick;$('#lbCls').value=p.cls;
   $('#lbForm').addEventListener('submit',e=>{
     e.preventDefault();
